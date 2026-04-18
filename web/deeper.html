@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>더 깊이 · Claude Code의 구조 · how-to-claude</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --panel-2: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #9a9a9a;
+    --accent: #ff7a1a;
+    --green: #3ecf8e;
+    --blue: #5aa2ff;
+    --purple: #b985ff;
+    --gray: #8a8a8a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                 "Pretendard", "Noto Sans KR", sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 64px 24px 120px; }
+  .crumb { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+
+  h1 {
+    font-size: 36px;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+  .lead {
+    color: var(--muted);
+    font-size: 17px;
+    margin: 0 0 12px;
+    max-width: 720px;
+  }
+  .subtitle {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(255,122,26,0.12);
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+
+  hr.sep {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  section { margin-bottom: 56px; }
+  section h2 {
+    font-size: 24px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  section .sec-intro {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0 0 22px;
+  }
+
+  .q-chip {
+    display: inline-block;
+    font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  /* Maker table */
+  .maker-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .maker-table th, .maker-table td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .maker-table tr:last-child td { border-bottom: none; }
+  .maker-table th {
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 12px; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .maker-table td.layer-1 { color: var(--accent); font-weight: 700; }
+  .maker-table td.layer-2 { color: var(--blue); font-weight: 700; }
+  .maker-table td.layer-3 { color: var(--green); font-weight: 700; }
+  .maker-table td b { color: var(--text); }
+  .maker-table td.who {
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 13px;
+  }
+
+  /* Build list */
+  .build-list {
+    display: flex; flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+    counter-reset: b;
+  }
+  .build-item {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    border-radius: 10px;
+    padding: 16px 20px 16px 58px;
+    position: relative;
+  }
+  .build-item::before {
+    counter-increment: b;
+    content: counter(b);
+    position: absolute;
+    left: 18px; top: 16px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(62,207,142,0.15);
+    color: var(--green);
+    font-weight: 700;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .build-item.advanced {
+    border-left-color: var(--accent);
+  }
+  .build-item.advanced::before {
+    background: rgba(255,122,26,0.15);
+    color: var(--accent);
+  }
+  .build-item h4 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .build-item h4 .badge {
+    display: inline-block;
+    font-size: 10px; letter-spacing: 0.08em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .build-item h4 .badge.basic { background: rgba(62,207,142,0.15); color: var(--green); }
+  .build-item h4 .badge.adv { background: rgba(255,122,26,0.15); color: var(--accent); }
+  .build-item p {
+    margin: 4px 0 0;
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .build-item .ref { color: var(--accent); font-size: 13px; font-weight: 600; }
+
+  /* Parts table */
+  .parts-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .parts-table th, .parts-table td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 14.5px;
+    vertical-align: top;
+  }
+  .parts-table tr:last-child td { border-bottom: none; }
+  .parts-table th {
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    width: 18%;
+  }
+  .parts-table td:first-child {
+    font-weight: 700; color: var(--text);
+    width: 18%;
+  }
+  .parts-table td .tag {
+    display: inline-block;
+    font-size: 10px; letter-spacing: 0.05em;
+    padding: 1px 6px; border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .parts-table td .tag.user-side {
+    background: rgba(62,207,142,0.15);
+    color: var(--green);
+  }
+  .parts-table td .tag.built-in {
+    background: rgba(138,138,138,0.15);
+    color: var(--gray);
+  }
+  .legend {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .legend .tag {
+    display: inline-block;
+    font-size: 10px; letter-spacing: 0.05em;
+    padding: 1px 6px; border-radius: 4px;
+    margin-right: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .legend .tag.user-side { background: rgba(62,207,142,0.15); color: var(--green); }
+  .legend .tag.built-in { background: rgba(138,138,138,0.15); color: var(--gray); }
+
+  .finale {
+    margin-top: 12px;
+    padding: 22px 24px;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-align: center;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  .finale b { color: var(--accent); }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex; justify-content: space-between; flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (max-width: 720px) {
+    h1 { font-size: 28px; }
+    .parts-table th, .parts-table td { padding: 12px 14px; font-size: 13.5px; }
+    .parts-table td:first-child { width: 30%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb"><a href="index.html">← how-to-claude 홈</a></div>
+
+  <span class="subtitle">더 깊이 · 구조편</span>
+  <h1>Claude Code는 무엇으로 이루어져 있나</h1>
+  <p class="lead">
+    메인 페이지에서는 Claude Code를 <b>LLM · 에이전트 · 하네스</b> 세 겹으로 설명했어요.
+    이 페이지는 그 다음 질문에 답합니다 — "그래서 내가 뭘 만들고, 뭘 안 만드는 거야?"
+  </p>
+
+  <hr class="sep" />
+
+  <!-- SECTION 1 -->
+  <section>
+    <div class="q-chip">질문 하나</div>
+    <h2>누가 무엇을 만드나</h2>
+    <p class="sec-intro">세 겹이 모두 Claude Code에 들어있지만, 만드는 주체가 다릅니다.</p>
+
+    <table class="maker-table">
+      <thead>
+        <tr>
+          <th>층</th>
+          <th>내용</th>
+          <th>만드는 사람</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="layer-1">① LLM</td>
+          <td>AI의 <b>뇌</b> — 말을 이해하고 만드는 부분</td>
+          <td class="who">Anthropic</td>
+        </tr>
+        <tr>
+          <td class="layer-2">② 에이전트</td>
+          <td>뇌에 <b>손발을 붙인 시스템</b> — 읽기·쓰기·찾기·실행</td>
+          <td class="who">Claude Code</td>
+        </tr>
+        <tr>
+          <td class="layer-3">③ 하네스</td>
+          <td>에이전트가 일할 <b>방의 배치와 규칙</b></td>
+          <td class="who" style="color: var(--green)">당신</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 18px; color: var(--muted); font-size: 14.5px;">
+      즉 <b style="color: var(--text)">"Claude Code를 잘 쓴다"는 실질적으로 "③ 하네스를 잘 짠다"</b>는 뜻에 가깝습니다.
+      이 사이트의 카드 1~6도 전부 ③에 대한 얘기예요.
+    </p>
+  </section>
+
+  <hr class="sep" />
+
+  <!-- SECTION 2 -->
+  <section>
+    <div class="q-chip">질문 둘</div>
+    <h2>그럼 사용자가 "새로 만드는 것"은 뭐죠?</h2>
+    <p class="sec-intro">
+      새 프로그램을 만든다 = 보통 <b>하네스 한 벌을 짠다</b>는 뜻입니다.
+      코드가 아니라 <b>자연어로 된 문서와 설정</b>을 쓰는 일이에요.
+    </p>
+
+    <div class="build-list">
+
+      <div class="build-item">
+        <h4>설명서 한 장 <span class="badge basic">기본</span></h4>
+        <p>이 프로젝트에서 AI가 지켜야 할 규칙을 한 장에. <span class="ref">→ 카드 하나</span></p>
+      </div>
+
+      <div class="build-item">
+        <h4>마당 경계 <span class="badge basic">기본</span></h4>
+        <p>맘대로 해도 되는 일 / 물어봐야 하는 일 / 절대 안 되는 일을 구분. <span class="ref">→ 카드 둘</span></p>
+      </div>
+
+      <div class="build-item">
+        <h4>자동 점검 장치 <span class="badge basic">기본</span></h4>
+        <p>"AI가 ~하면 자동으로 ~가 확인되게" 같은 배선. 사람이 매번 검사하지 않아도 되도록. <span class="ref">→ 카드 셋</span></p>
+      </div>
+
+      <div class="build-item">
+        <h4>상황별 설명서 쪼개기 <span class="badge basic">기본</span></h4>
+        <p>규칙이 길어지면 주제·상황별로 파일을 나눠 그때그때 불러오기. <span class="ref">→ 카드 넷</span></p>
+      </div>
+
+      <div class="build-item advanced">
+        <h4>외부 콘센트 연결 <span class="badge adv">고급</span></h4>
+        <p>사내 시스템·구글 달력·회사 위키 등을 AI의 손발로 붙이는 것. 기술 이름은 <b>MCP</b>. 당장은 몰라도 되고, 필요해질 때 돌아와서 읽으면 돼요.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="sep" />
+
+  <!-- SECTION 3 -->
+  <section>
+    <div class="q-chip">질문 셋</div>
+    <h2>에이전트는 뇌와 손발이 전부인가요?</h2>
+    <p class="sec-intro">
+      아니요. 에이전트를 더 자세히 열면 이렇게 구성돼 있습니다.
+      초록 태그는 <b>당신이 설계에 손댈 수 있는 부분</b>, 회색은 Claude Code가 기본 제공하는 부분이에요.
+    </p>
+
+    <table class="parts-table">
+      <thead>
+        <tr>
+          <th>부품</th>
+          <th>하는 일</th>
+          <th>예</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>뇌 <span class="tag built-in">기본</span></td>
+          <td>생각·판단</td>
+          <td>Claude 모델</td>
+        </tr>
+        <tr>
+          <td>손발 <span class="tag built-in">기본</span></td>
+          <td>실제 행동</td>
+          <td>파일 읽기·쓰기·찾기·실행</td>
+        </tr>
+        <tr>
+          <td>기억 <span class="tag user-side">설계 가능</span></td>
+          <td>맥락을 유지하는 능력</td>
+          <td>대화 중 기억 + 파일로 남기는 장기 기억</td>
+        </tr>
+        <tr>
+          <td>반복 고리 <span class="tag built-in">기본</span></td>
+          <td>생각 → 행동 → 관찰 → 다시 생각</td>
+          <td>에이전트의 핵심 동작 방식</td>
+        </tr>
+        <tr>
+          <td>부하 직원 <span class="tag user-side">설계 가능</span></td>
+          <td>일을 다른 에이전트에게 맡기기</td>
+          <td>서브에이전트</td>
+        </tr>
+        <tr>
+          <td>숙련 매뉴얼 <span class="tag user-side">설계 가능</span></td>
+          <td>반복되는 작업 절차를 묶어 재사용</td>
+          <td>스킬(Skill)</td>
+        </tr>
+        <tr>
+          <td>외부 콘센트 <span class="tag user-side">설계 가능</span></td>
+          <td>바깥 시스템 연결</td>
+          <td>MCP (사내 DB, 외부 API 등)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="legend">
+      <div><span class="tag built-in">기본</span> Claude Code가 기본으로 제공 — 건드리지 않아도 됨</div>
+      <div><span class="tag user-side">설계 가능</span> 하네스 짜면서 당신이 정할 수 있는 부분</div>
+    </div>
+  </section>
+
+  <hr class="sep" />
+
+  <!-- FINALE -->
+  <div class="finale">
+    정리하면 — 에이전트의 <b>몸은 Claude Code가 주고</b>,<br/>
+    그 몸을 <b>어떻게 쓸지는 하네스가 결정</b>합니다.<br/>
+    그리고 그 하네스를 쓰는 사람이, 바로 당신이에요.
+  </div>
+
+  <footer>
+    <div>© how-to-claude · 비개발자 트랙 · 더 깊이</div>
+    <div>
+      <a href="index.html">← 메인으로</a> ·
+      <a href="customers/index.html">고객 프로파일</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

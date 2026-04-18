@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>사례 하나 · 유튜브 채널을 시작한 지인의 이야기 · how-to-claude</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --panel-2: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #9a9a9a;
+    --accent: #ff7a1a;
+    --green: #3ecf8e;
+    --red: #ff5c5c;
+    --blue: #5aa2ff;
+    --purple: #b985ff;
+    --gray: #8a8a8a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                 "Pretendard", "Noto Sans KR", sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 120px; }
+
+  .crumb { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .subtitle {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--purple);
+    background: rgba(185,133,255,0.12);
+    padding: 4px 10px; border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  h1 { font-size: 34px; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .lead { color: var(--muted); font-size: 17px; margin: 0 0 48px; max-width: 720px; }
+
+  section { margin-bottom: 52px; }
+  h2 {
+    font-size: 22px; margin: 0 0 10px; letter-spacing: -0.01em;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  h2 .phase-num {
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 13px; color: var(--purple); font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  h2 + .sub {
+    color: var(--muted); margin: 0 0 20px; font-size: 15px;
+  }
+
+  .block {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+  }
+  .block + .block { margin-top: 14px; }
+  .block p { margin: 0 0 12px; font-size: 15.5px; line-height: 1.7; }
+  .block p:last-child { margin-bottom: 0; }
+  .block b { color: var(--text); }
+  .block .highlight {
+    color: var(--purple); font-weight: 600;
+  }
+
+  .quote-block {
+    border-left: 3px solid var(--purple);
+    padding: 2px 18px;
+    margin: 16px 0;
+    color: #d8d8d8;
+    font-size: 15.5px;
+    font-style: italic;
+  }
+
+  .insight {
+    background: rgba(185,133,255,0.06);
+    border: 1px solid rgba(185,133,255,0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 18px 0;
+  }
+  .insight .label {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--purple); font-weight: 700; margin-bottom: 8px;
+  }
+  .insight p { margin: 0; font-size: 15px; line-height: 1.7; }
+
+  .card-tags {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .card-tag {
+    font-size: 12px;
+    padding: 3px 10px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+  }
+  .card-tag a {
+    color: var(--text); text-decoration: none;
+  }
+  .card-tag a:hover { color: var(--accent); }
+
+  .status-box {
+    margin-top: 32px;
+    padding: 22px 24px;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .status-box h3 {
+    margin: 0 0 10px;
+    font-size: 15px; letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+  .status-box ul { margin: 0; padding-left: 20px; }
+  .status-box li { margin-bottom: 6px; color: var(--muted); }
+  .status-box li b { color: var(--text); }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb"><a href="index.html">← 메인</a></div>
+
+  <span class="subtitle">사례 하나 · 창작자</span>
+  <h1>퍼스널 브랜드 유튜브 채널을 시작한 지인의 이야기</h1>
+  <p class="lead">
+    AI를 진지하게 써본 적이 한 번도 없던 30대 지인이, 커리어 전환기에 <b>"회사 밖에서 내 거 해보고 싶은 사람의 진짜 과정"</b>이라는 채널을 시작했습니다.
+    개발자가 아니지만, 기획·리서치·대본 초안까지 Claude와 함께 만들어 나갔어요.
+    이 사례는 메인 페이지 카드 하나·다섯·여섯의 바탕이 된 이야기입니다.
+  </p>
+
+  <!-- PHASE 1 -->
+  <section>
+    <h2><span class="phase-num">단계 1</span>긴 인터뷰부터 시작했다</h2>
+    <p class="sub">"채널을 어떻게 만들지"가 아니라 "이 사람은 누군지"를 먼저 정리.</p>
+
+    <div class="block">
+      <p>
+        AI와 처음 하는 작업은 <b>나를 소개하는 일</b>이었습니다. 왜 퇴사했는지, 어떤 경험이 있고 무엇을 잘하는지,
+        어떤 시청자를 만나고 싶은지 — 이런 이야기를 Claude와 마주 앉아 인터뷰하듯 정리했어요.
+      </p>
+      <p>
+        결과물은 한 장의 문서였습니다. <b>"나를 모르는 Claude가 다음에 읽었을 때, 3초 만에 맥락을 잡을 수 있게"</b>가 목표였어요.
+        이 문서가 이후 모든 대화의 출발점이 됩니다.
+      </p>
+    </div>
+
+    <div class="insight">
+      <div class="label">이 단계가 카드 하나(설명서)의 원형</div>
+      <p>
+        프로젝트 설명서는 코드가 아니라 <b>"나를 소개하는 글"</b>에서 시작한다는 걸 알게 된 시점.
+        이 문서 하나가 다음 10번의 대화를 좌우했어요.
+      </p>
+    </div>
+  </section>
+
+  <!-- PHASE 2 -->
+  <section>
+    <h2><span class="phase-num">단계 2</span>리서치를 AI에게 시키는 법을 배웠다</h2>
+    <p class="sub">영상 70개를 사람이 보는 건 불가능. AI에게 "보고 요약"을 시켰다.</p>
+
+    <div class="block">
+      <p>
+        채널 방향을 잡기 위해 비슷한 주제의 영상 수십 개를 봐야 했습니다.
+        혼자 하루종일 본다고 다 볼 수 없는 양이었어요.
+      </p>
+      <p>
+        그래서 Claude에게 <b>"이 영상 URL을 받아 제목·조회수·댓글·자막까지 뽑아오는 작업"</b>을 자동화하는 방법을 물었습니다.
+        개발자가 아니어서 직접 짤 수는 없었지만, <b>Claude가 대신 스크립트를 써줬고</b>, 사용자는 "이 영상 분석해줘" 한 마디로 실행만 하면 됐어요.
+      </p>
+      <p>
+        이렇게 두 분야에서 <b>총 140개 영상을 분석</b>했고, 각 분야의 "제목 공식", "상위 영상의 공통 구조", "성공한 썸네일 패턴"을 뽑아냈습니다.
+      </p>
+    </div>
+
+    <div class="insight">
+      <div class="label">발견 하나 — 공감 시장의 힘</div>
+      <p>
+        리서치 중 인상 깊은 지표가 있었어요.
+        <b>구독자 약 4천 명인 채널이 한 영상에서 46만 조회수</b>를 기록하고 있었습니다.
+        크기가 아니라 주제·제목·타이밍이 먹혔던 거예요.
+        <span class="highlight">"이 시장은 정보가 아니라 공감"</span>이라는 판단이 여기서 나왔습니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- PHASE 3 -->
+  <section>
+    <h2><span class="phase-num">단계 3</span>완벽한 기획보다 첫 영상부터 올렸다</h2>
+    <p class="sub">채널명도 안 정했는데 일단 영상 하나를 올렸다.</p>
+
+    <div class="block">
+      <p>
+        3주 동안 "내 톤은 뭘까 / 어떤 포맷이 맞을까 / 시작은 어떻게 해야 정석일까"를 머릿속에서 굴렸는데
+        답이 안 나왔어요.
+      </p>
+      <p>
+        그때 <b>방향과 무관한 브이로그 한 편을 그냥 올려버리자</b>는 결정을 했습니다.
+        완성도는 낮았지만, 올리고 나서 이상한 일이 일어났어요 —
+      </p>
+      <div class="quote-block">
+        "아, 이건 내 톤이 아니구나. 내가 원하는 건 이게 아니구나."
+      </div>
+      <p>
+        3주간 고민해서도 안 보이던 것이, <b>결과물 하나에 선명하게 드러났습니다.</b>
+        창작은 특히 <span class="highlight">만들어야 알게 되는 일</span>이라는 걸 몸으로 배운 순간.
+      </p>
+    </div>
+
+    <div class="insight">
+      <div class="label">이 단계가 카드 다섯의 핵심</div>
+      <p>
+        "틀보다 결과물이 먼저"라는 원칙은 이 경험에서 왔어요.
+        기획만으로는 기획조차 제대로 안 됩니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- PHASE 4 -->
+  <section>
+    <h2><span class="phase-num">단계 4</span>두 번째 영상은 정말 진지하게</h2>
+    <p class="sub">리서치 결과를 바탕으로 제목·구조·발행 타이밍까지 설계.</p>
+
+    <div class="block">
+      <p>
+        첫 영상으로 방향이 잡힌 뒤, 두 번째 영상은 전혀 다르게 접근했습니다.
+        Claude와 함께 <b>3종 세트</b>를 만들었어요.
+      </p>
+      <p>
+        <b>1. 기획안</b> — "왜 이 영상을 만드는가 / 시청자는 누구인가 / 성공은 무엇으로 측정할 것인가"<br/>
+        <b>2. 콘티·스크립트</b> — 완벽한 대본이 아니라 <span class="highlight">핵심 키워드 + "[자유롭게 말하기]"</span>가 섞인 구성. 억지 연기를 막기 위함.<br/>
+        <b>3. 발행 문서</b> — 제목·설명·태그·썸네일 텍스트 옵션·업로드 타이밍·업로드 후 2시간 내 할 일까지.
+      </p>
+      <p>
+        특히 발행 문서는 <b>"다음 날 뭘 할지까지"</b> 체크리스트화했습니다.
+        촬영 끝나고 멍하니 "이제 뭐 하지" 하지 않도록.
+      </p>
+    </div>
+  </section>
+
+  <!-- PHASE 5 -->
+  <section>
+    <h2><span class="phase-num">단계 5</span>그런데 한 번, AI가 거짓말을 했다</h2>
+    <p class="sub">"요즘 뜨는 포맷"을 정리해 달라고 했는데, 존재하지 않는 채널이 섞여 있었다.</p>
+
+    <div class="block">
+      <p>
+        리서치 중에 Claude에게 "요즘 뜨는 포맷 3가지"를 물었습니다.
+        깔끔한 목록이 돌아왔고, 처음엔 "오, 좋은데?" 싶었죠.
+      </p>
+      <p>
+        그런데 직접 확인해보니 <b>일부는 이미 한물 간 유행</b>이었고,
+        <b>몇 개는 아예 존재하지 않는 채널 이름</b>이었어요.
+        AI는 그럴듯한 문장을 만드는 데는 능하지만,
+        <span class="highlight">"사실"과 "그럴듯한 문장"을 구분하지 않는다</span>는 걸 그날 알았습니다.
+      </p>
+      <p>
+        그 뒤로는 리서치 질문에 반드시 조건을 붙였어요 —
+        <b>"근거가 되는 영상 URL과 조회수를 같이 적어줘. 없으면 '모름'이라고 말해줘."</b>
+      </p>
+    </div>
+
+    <div class="insight">
+      <div class="label">이 사건이 카드 여섯의 바탕</div>
+      <p>
+        "조용한 실패"는 AI가 에러를 낼 때가 아니라, <b>그럴듯하게 성공한 척할 때</b> 가장 위험합니다.
+        그래서 이제는 AI에게 "결과 + 근거 한 줄"을 항상 요구해요.
+      </p>
+    </div>
+  </section>
+
+  <!-- STATUS -->
+  <div class="status-box">
+    <h3>지금 어디까지 왔나</h3>
+    <ul>
+      <li><b>영상 1개</b> — 방향과 무관한 첫 시도 (배움용)</li>
+      <li><b>영상 2개 기획 완료</b> — 리서치 + 3종 세트 + 촬영 예정</li>
+      <li><b>자동화 배선</b> — 리서치 스크립트, 폴더 구조, 비공개 저장소</li>
+      <li><b>다음 단계</b> — 영상 업로드 후 2주 뒤 데이터(조회수·댓글·이탈 지점)를 근거로 다음 영상 기획</li>
+    </ul>
+  </div>
+
+  <footer>
+    <div>© how-to-claude · 사례 하나</div>
+    <div>
+      <a href="index.html">← 메인</a> ·
+      <a href="story-dk.html">사례 둘: 반복 업무 자동화 →</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

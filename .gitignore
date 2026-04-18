@@ -1,0 +1,28 @@
+# --- PRIVATE: 절대 공개 저장소에 올리지 말 것 ---
+
+# 고객 CRM (실명·개인 PRD·민감 요구사항 포함)
+local/
+
+# 원본 사례 작업물 (친구·지인의 개인 프로젝트)
+최종목표*/
+dk_PQR-REF-maker-main/
+
+# 내부 분석·메모
+intake/
+_research/
+cards/
+
+# 로컬 툴 설정
+.claude/
+.obsidian/
+.DS_Store
+*.swp
+*.log
+
+# Python / 빌드 산출물
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+build/

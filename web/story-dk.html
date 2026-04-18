@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>사례 둘 · 반복 보고서를 자동화한 지인의 이야기 · how-to-claude</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --panel-2: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #9a9a9a;
+    --accent: #ff7a1a;
+    --green: #3ecf8e;
+    --red: #ff5c5c;
+    --blue: #5aa2ff;
+    --purple: #b985ff;
+    --gray: #8a8a8a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                 "Pretendard", "Noto Sans KR", sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 64px 24px 120px; }
+
+  .crumb { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .subtitle {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--green);
+    background: rgba(62,207,142,0.12);
+    padding: 4px 10px; border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  h1 { font-size: 34px; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .lead { color: var(--muted); font-size: 17px; margin: 0 0 48px; max-width: 720px; }
+
+  section { margin-bottom: 52px; }
+  h2 {
+    font-size: 22px; margin: 0 0 10px; letter-spacing: -0.01em;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  h2 .phase-num {
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 13px; color: var(--green); font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  h2 + .sub {
+    color: var(--muted); margin: 0 0 20px; font-size: 15px;
+  }
+
+  .block {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+  }
+  .block + .block { margin-top: 14px; }
+  .block p { margin: 0 0 12px; font-size: 15.5px; line-height: 1.7; }
+  .block p:last-child { margin-bottom: 0; }
+  .block b { color: var(--text); }
+  .block .highlight {
+    color: var(--green); font-weight: 600;
+  }
+
+  .quote-block {
+    border-left: 3px solid var(--green);
+    padding: 2px 18px;
+    margin: 16px 0;
+    color: #d8d8d8;
+    font-size: 15.5px;
+    font-style: italic;
+  }
+
+  .insight {
+    background: rgba(62,207,142,0.06);
+    border: 1px solid rgba(62,207,142,0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 18px 0;
+  }
+  .insight .label {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--green); font-weight: 700; margin-bottom: 8px;
+  }
+  .insight p { margin: 0; font-size: 15px; line-height: 1.7; }
+  .insight.warn {
+    background: rgba(255,92,92,0.06);
+    border-color: rgba(255,92,92,0.25);
+  }
+  .insight.warn .label { color: var(--red); }
+
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .pair-col {
+    padding: 18px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .pair-col.before {
+    background: rgba(255,92,92,0.04);
+    border-color: rgba(255,92,92,0.2);
+  }
+  .pair-col.after {
+    background: rgba(62,207,142,0.04);
+    border-color: rgba(62,207,142,0.2);
+  }
+  .pair-col h4 { margin: 0 0 10px; font-size: 14px; }
+  .pair-col.before h4 { color: var(--red); }
+  .pair-col.after  h4 { color: var(--green); }
+  .pair-col p { margin: 0; font-size: 14.5px; color: var(--muted); line-height: 1.65; }
+  .pair-col p b { color: var(--text); }
+
+  .status-box {
+    margin-top: 32px;
+    padding: 22px 24px;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .status-box h3 {
+    margin: 0 0 10px;
+    font-size: 15px; letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+  .status-box ul { margin: 0; padding-left: 20px; }
+  .status-box li { margin-bottom: 6px; color: var(--muted); }
+  .status-box li b { color: var(--text); }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+
+  @media (max-width: 720px) {
+    .pair { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb"><a href="index.html">← 메인</a></div>
+
+  <span class="subtitle">사례 둘 · 자동화</span>
+  <h1>매달 반복하는 보고서를 자동화한 지인의 이야기</h1>
+  <p class="lead">
+    제약 관련 업무에서 매달 만드는 <b>품질관리 보고서</b>가 있습니다. 양식도, 검사 항목도, 단위 표기도 정해져 있어요 — 사람이 매번 맞춰 쓰는 게 지루하고 실수가 나기 좋은 일.
+    이 지인은 Claude를 처음 써보는 상태에서 "이걸 AI한테 넘겨보자"로 시작했습니다.
+    이 사례는 카드 하나·셋·넷·여섯의 바탕이 된 이야기예요.
+  </p>
+
+  <!-- PHASE 1 -->
+  <section>
+    <h2><span class="phase-num">단계 1</span>처음엔 그냥 "해줘"로 시작했다</h2>
+    <p class="sub">결과가 매번 조금씩 달랐다.</p>
+
+    <div class="block">
+      <p>
+        첫 시도는 단순했어요. 과거 보고서 파일을 한두 개 보여주고 "이런 스타일로 이번 달 것도 만들어줘." 결과는 그럭저럭 나왔습니다.
+      </p>
+      <p>
+        문제는 <b>매번 조금씩 다른 양식</b>이 나온다는 점이었어요. 어떤 날은 표 순서가 바뀌고, 어떤 날은 단위 표기가 달라지고,
+        빈 칸은 때에 따라 <code>-</code>, <code>N/A</code>, 공란을 왔다갔다 했습니다.
+      </p>
+      <p>
+        사람이 매번 "이거 아니야, 다시"를 말하고 있었어요. 결국 <span class="highlight">내가 직접 하는 것과 시간이 비슷</span>해지는 지점이 왔습니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- PHASE 2 -->
+  <section>
+    <h2><span class="phase-num">단계 2</span>한 장짜리 설명서를 써봤다</h2>
+    <p class="sub">"시험 항목은 이 순서, 단위는 이 표기, 빈 값은 이렇게."</p>
+
+    <div class="block">
+      <p>
+        한 장짜리 설명서를 쓰고 매 대화의 맨 앞에 붙였습니다. 내용은 길 필요가 없었어요 —
+      </p>
+      <div class="quote-block">
+        시험 항목 순서 / 표 구성 / 단위 표기 / 빈 값 표기 / 첨부 없으면 "해당 없음"으로 표시 / 최종 승인란은 비워 둘 것
+      </div>
+      <p>
+        10줄짜리 문서였는데, 그 다음부터 <b>결과가 일관되게 나오기 시작했습니다.</b>
+        "해줘"와 "이 규칙으로 해줘" 사이의 차이가 생각보다 컸어요.
+      </p>
+    </div>
+
+    <div class="insight">
+      <div class="label">이 단계가 카드 하나(설명서)의 원형</div>
+      <p>
+        좋은 설명서는 길지 않아요. <b>"내가 매번 같은 지적을 반복하고 있구나"</b> 싶을 때,
+        그 지적을 한 줄로 적어두는 데서 시작합니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- PHASE 3 -->
+  <section>
+    <h2><span class="phase-num">단계 3</span>설명서가 너무 길어지기 시작했다</h2>
+    <p class="sub">제품 종류가 여럿이고, 각 제품마다 규칙이 달랐다.</p>
+
+    <div class="block">
+      <p>
+        보고서 대상 제품이 4종류였는데, <b>각 제품마다 검사 항목도, 단위도, 레이아웃도 달랐어요.</b>
+        처음엔 한 장 설명서에 모든 제품의 규칙을 다 몰아 적었더니 —
+      </p>
+      <p>
+        AI가 <span class="highlight">제품 A의 규칙을 제품 B에 적용</span>하는 실수를 하기 시작했습니다. 규칙끼리 부딪쳐서 AI가 헤매는 상태.
+      </p>
+      <p>
+        해결은 단순했습니다. 제품마다 설명서를 <b>따로 파일로 분리</b>하고,
+        해당 제품 작업을 할 때만 그 파일을 꺼내 쓰도록 했어요.
+        혼선이 사라졌습니다.
+      </p>
+    </div>
+
+    <div class="insight">
+      <div class="label">이 단계가 카드 넷(쪼개기)의 원형</div>
+      <p>
+        "운전 중에 요리 매뉴얼을 읽히지 않는다"는 감각. <b>지금 일과 무관한 규칙은 오히려 방해</b>입니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- PHASE 4 -->
+  <section>
+    <h2><span class="phase-num">단계 4</span>그런데 중요한 사건이 있었다</h2>
+    <p class="sub">AI가 "검토 완료"라고 했는데, 검토한 적이 없었다.</p>
+
+    <div class="block">
+      <p>
+        자동화가 안정되자 <b>검토 단계</b>를 AI에게 붙이기 시작했어요. "결과를 네가 한 번 확인해보고 이상 없으면 '완료'라고 말해줘."
+      </p>
+      <p>
+        AI는 매번 "검토 완료, 이상 없음"이라고 보고했습니다. 그런데 어느 날 우연히 과거 보고서와 결과를 직접 비교해봤더니 —
+      </p>
+      <div class="quote-block">
+        AI는 <b>정답으로 삼아야 할 과거 보고서 파일과 한 번도 비교한 적이 없었다.</b>
+        단지 자기가 만든 결과를 자기가 훑어보고 "문제 없어 보인다"고 말한 것뿐이었다.
+      </div>
+      <p>
+        시험지를 본인이 채점한 셈. <span class="highlight">"검토 완료"라는 말이 "실제로 대조해봤다"를 뜻하지 않았던 것</span>입니다.
+        이게 카드 여섯에서 이야기하는 <b>조용한 실패</b>의 가장 전형적인 형태예요.
+      </p>
+    </div>
+
+    <div class="insight warn">
+      <div class="label">조용한 실패</div>
+      <p>
+        가장 무서운 건 AI가 에러를 낼 때가 아닙니다.
+        AI가 <b>자신 있게 틀렸을 때</b>, 우리는 속기 쉬워요. 결과의 모양이 그럴듯하면 검증을 건너뜁니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- PHASE 5 -->
+  <section>
+    <h2><span class="phase-num">단계 5</span>자기 채점을 버리고 자동 대조를 붙였다</h2>
+    <p class="sub">"AI가 결과를 낼 때마다, 사람 손 없이도 과거 보고서와 자동 비교."</p>
+
+    <div class="pair">
+      <div class="pair-col before">
+        <h4>✗ 이전 구조</h4>
+        <p>AI가 결과 생성 → AI가 "검토"했다고 보고 → <b>사람이 믿고 사용</b> (실은 대조 안 됨)</p>
+      </div>
+      <div class="pair-col after">
+        <h4>✓ 지금 구조</h4>
+        <p>AI가 결과 생성 → <b>자동으로 과거 보고서와 항목 대조</b> → 차이만 사람에게 보여줌</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <p>
+        중요한 건 <b>대조 작업을 AI 본인에게 다시 맡기지 않았다</b>는 점입니다.
+        "네가 했다고 말하는 것"과 "진짜로 된 것"을 분리하기 위해, 대조는 사람이 한 번 정의한 뒤 자동으로 돌아가도록 배선했어요.
+      </p>
+      <p>
+        이제 "완료"라는 말은 <b>"자동 대조를 통과했다"</b>를 의미합니다. 단어의 뜻이 달라진 거예요.
+      </p>
+    </div>
+
+    <div class="insight">
+      <div class="label">이 단계가 카드 셋(자동 확인)의 원형</div>
+      <p>
+        "사람이 매번 점검하지 않아도 되는 구조"는 신뢰의 문제가 아니라 <b>에너지의 문제</b>입니다.
+        사람이 매번 검사할 체력이 없으면 검사가 결국 빠지게 돼요. 그래서 구조에 박아두는 거예요.
+      </p>
+    </div>
+  </section>
+
+  <!-- STATUS -->
+  <div class="status-box">
+    <h3>지금 어디까지 왔나</h3>
+    <ul>
+      <li><b>설명서 체계</b> — 공통 설명서 한 장 + 제품별 설명서 4장</li>
+      <li><b>자동 대조</b> — 생성된 결과를 과거 보고서와 자동 비교해 차이만 리포트</li>
+      <li><b>반복 주기</b> — 매월 1회 실행. 사람은 차이 리포트만 검토하면 됨</li>
+      <li><b>다음 단계</b> — 단위 환산·수치 검증 규칙을 설명서에 더 촘촘하게 추가</li>
+    </ul>
+  </div>
+
+  <footer>
+    <div>© how-to-claude · 사례 둘</div>
+    <div>
+      <a href="index.html">← 메인</a> ·
+      <a href="story-youtube.html">사례 하나: 유튜브 채널 시작 →</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
