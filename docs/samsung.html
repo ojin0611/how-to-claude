@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Samsung 프로파일 · how-to-claude</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --panel-2: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #9a9a9a;
+    --accent: #ff7a1a;
+    --green: #3ecf8e;
+    --red: #ff5c5c;
+    --blue: #5aa2ff;
+    --purple: #b985ff;
+    --gray: #8a8a8a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                 "Pretendard", "Noto Sans KR", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 100px; }
+  .crumb { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+
+  .pnav {
+    display: flex; gap: 8px; margin-bottom: 36px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .pnav a {
+    padding: 6px 14px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--border);
+    font-size: 13px; color: var(--muted);
+  }
+  .pnav a.active {
+    background: rgba(138,138,138,0.15);
+    border-color: var(--gray);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .header { margin-bottom: 36px; }
+  .subtitle {
+    display: inline-block;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gray);
+    background: rgba(138,138,138,0.12);
+    padding: 4px 10px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: 34px; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 12px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .tag.win { color: var(--blue); border-color: rgba(90,162,255,0.3); }
+  .tag.pro { color: var(--green); border-color: rgba(62,207,142,0.3); }
+
+  section { margin-bottom: 40px; }
+  h2 {
+    font-size: 13px; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+
+  .empty-want {
+    background: var(--panel);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 28px 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 15.5px;
+    line-height: 1.7;
+  }
+  .empty-want b { color: var(--text); }
+
+  .starter {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+  }
+  .starter h3 {
+    margin: 0 0 10px;
+    font-size: 15px; letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+  .starter ol {
+    margin: 0; padding-left: 20px;
+    color: var(--muted); line-height: 1.8;
+  }
+  .starter ol li { margin-bottom: 4px; }
+  .starter ol li b { color: var(--text); }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb"><a href="index.html">← how-to-claude 메인</a></div>
+
+  <nav class="pnav">
+    <a href="mac.html">Mac</a>
+    <a href="samsung.html" class="active">Samsung</a>
+    <a href="asus.html">ASUS</a>
+  </nav>
+
+  <header class="header">
+    <span class="subtitle">Samsung · 페르소나 미정</span>
+    <h1>무엇을 만들고 싶은지, 아직 이야기 중</h1>
+    <div class="tags">
+      <span class="tag win">Samsung · Windows</span>
+      <span class="tag pro">Claude Pro</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>지금 하고 싶은 것</h2>
+    <div class="empty-want">
+      이 페이지는 <b>빈칸으로 두는 중</b>입니다.<br/>
+      어떤 일에 Claude를 쓰고 싶은지 먼저 얘기 나눠보고 그 다음 채우기로 했어요.
+    </div>
+  </section>
+
+  <section>
+    <h2>첫 대화에서 같이 정리해볼 것</h2>
+    <div class="starter">
+      <h3>질문 네 개</h3>
+      <ol>
+        <li><b>요즘 반복해서 하는 일</b> 중에 "이거 누가 대신 좀…" 싶은 게 있나요?</li>
+        <li>완전히 <b>새로 만들고 싶은 것</b>(프로젝트·콘텐츠·사업)이 있나요?</li>
+        <li>그걸 하는데 지금 막힌 건 <b>정보 부족, 시간 부족, 용기 부족</b> 중 어느 쪽에 가깝나요?</li>
+        <li>만약 AI가 <b>한 가지만 잘해준다면</b>, 뭐를 맡기고 싶으세요?</li>
+      </ol>
+      <p style="margin-top:14px; color:var(--muted); font-size:13.5px;">
+        대답이 한 줄이어도 좋아요. 여기서 페르소나(창작자 / 분석가 / 자동화)와 먼저 읽을 카드가 정해집니다.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>추천 — 먼저 둘러볼 곳</h2>
+    <p style="color:var(--muted); font-size:15px; margin:0 0 10px;">
+      아직 페르소나가 정해지지 않았다면, 메인의 <b>여섯 카드</b>와 <b>두 사례</b>를 먼저 훑어보세요.
+      다른 사람들이 어떤 고민을 어떻게 풀었는지 보는 게 내 고민을 정리하는 데 도움이 돼요.
+    </p>
+    <ul style="color:var(--muted); font-size:14.5px;">
+      <li><a href="index.html#cases">앞서간 두 사람 (사례)</a></li>
+      <li><a href="index.html#cards">여섯 장의 카드</a></li>
+      <li><a href="deeper.html">Claude Code가 뭔지 더 깊이</a></li>
+    </ul>
+  </section>
+
+  <footer>
+    <div>© how-to-claude · Samsung 프로파일</div>
+    <div>
+      <a href="mac.html">Mac →</a> ·
+      <a href="asus.html">ASUS →</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

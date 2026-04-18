@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mac 프로파일 · how-to-claude</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --panel-2: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #9a9a9a;
+    --accent: #ff7a1a;
+    --green: #3ecf8e;
+    --red: #ff5c5c;
+    --blue: #5aa2ff;
+    --purple: #b985ff;
+    --gray: #8a8a8a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                 "Pretendard", "Noto Sans KR", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 100px; }
+  .crumb { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+
+  /* profile nav */
+  .pnav {
+    display: flex; gap: 8px; margin-bottom: 36px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .pnav a {
+    padding: 6px 14px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--border);
+    font-size: 13px; color: var(--muted);
+  }
+  .pnav a.active {
+    background: var(--accent-dim, rgba(255,122,26,0.12));
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .header { margin-bottom: 36px; }
+  .subtitle {
+    display: inline-block;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--blue);
+    background: rgba(90,162,255,0.12);
+    padding: 4px 10px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: 34px; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 12px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .tag.mac { color: var(--accent); border-color: rgba(255,122,26,0.3); }
+  .tag.pro { color: var(--green); border-color: rgba(62,207,142,0.3); }
+  .tag.ana { color: var(--blue);  border-color: rgba(90,162,255,0.3); }
+
+  section { margin-bottom: 40px; }
+  h2 {
+    font-size: 13px; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+
+  .want {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  .want b { color: var(--text); }
+
+  .problems {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .problem {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px 14px 46px;
+    position: relative;
+    counter-increment: p;
+  }
+  .problems { counter-reset: p; }
+  .problem::before {
+    content: counter(p);
+    position: absolute; left: 14px; top: 14px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(90,162,255,0.15);
+    color: var(--blue);
+    font-weight: 700; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .problem h4 {
+    margin: 0 0 4px; font-size: 15px;
+  }
+  .problem p {
+    margin: 0; font-size: 14px; color: var(--muted); line-height: 1.6;
+  }
+
+  .risk {
+    background: rgba(255,92,92,0.06);
+    border: 1px solid rgba(255,92,92,0.25);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .risk .label {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--red); font-weight: 700; margin-bottom: 8px;
+  }
+  .risk p { margin: 0; font-size: 14.5px; line-height: 1.65; }
+
+  .card-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .card-chip {
+    font-size: 12px; padding: 4px 10px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+  }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb"><a href="index.html">← how-to-claude 메인</a></div>
+
+  <nav class="pnav">
+    <a href="mac.html" class="active">Mac</a>
+    <a href="samsung.html">Samsung</a>
+    <a href="asus.html">ASUS</a>
+  </nav>
+
+  <header class="header">
+    <span class="subtitle">Mac · 분석가</span>
+    <h1>내 포트폴리오를 한눈에 — 통합 대시보드</h1>
+    <div class="tags">
+      <span class="tag mac">macOS</span>
+      <span class="tag pro">Claude Pro</span>
+      <span class="tag ana">페르소나 · 분석가</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>지금 하고 싶은 것</h2>
+    <div class="want">
+      여러 투자 계좌(해외 주식 · 국내 주식 · 가상자산)에 흩어져 있는 자산을
+      <b>한 화면에서 보고 싶다.</b>
+      단순 잔고 추적을 넘어, 진짜 위험도 · 세무 영향 · 관련 뉴스까지
+      같이 읽어주는 <b>통합 대시보드</b>가 있으면 좋겠다.
+    </div>
+  </section>
+
+  <section>
+    <h2>풀고 싶은 문제들</h2>
+    <div class="problems">
+
+      <div class="problem">
+        <h4>화면 사진만 있어도 자동으로 데이터가 쌓이게</h4>
+        <p>계좌 스크린샷을 찍어 올리면 종목·수량·평단·현재가를 AI가 읽어서 시계열로 차곡차곡 쌓아주기. 매번 엑셀에 입력하는 수고 없이.</p>
+      </div>
+
+      <div class="problem">
+        <h4>"진짜 레버리지"를 숫자로 보기</h4>
+        <p>개별 종목별로 내가 생각하는 위험 배수를 정의해두면, 포트폴리오 전체의 실질적인 노출도를 한 수치로 요약해서 보여주기.</p>
+      </div>
+
+      <div class="problem">
+        <h4>ETF 속에 숨은 기업 비중까지 투시하기</h4>
+        <p>ETF를 들고 있으면서 개별 기업도 같이 사두면, 그 기업에 실제로 얼마나 노출됐는지 모르게 되기 쉬움. 그 중복을 펼쳐서 보여주기.</p>
+      </div>
+
+      <div class="problem">
+        <h4>매매·권리락·세무 이벤트 자동 보정</h4>
+        <p>수량이 갑자기 바뀌면 매매인지 액면분할인지 AI가 먼저 확인. 연말엔 세금 최적화를 위한 매도 제안까지.</p>
+      </div>
+
+      <div class="problem">
+        <h4>내 자산에 맞춘, 교차검증된 뉴스 요약</h4>
+        <p>보유 종목과 관련된 소식 중 두세 매체에서 동시에 다룬 "사실"만 골라 세 줄 이내로 요약. 자극적 헤드라인은 거름.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>AI가 특히 조심해야 하는 부분</h2>
+    <div class="risk">
+      <div class="label">카드 여섯 — 조용한 실패</div>
+      <p>
+        이 시스템은 돈과 직접 연결돼 있어요. AI가 <b>숫자를 지어내거나</b> <b>오래된 가격</b>을 현재가처럼 쓰면 그대로 의사결정 오류로 이어집니다.
+        모든 수치에는 반드시 <b>출처·기준 시점</b>을 같이 남기도록 구조를 짜야 합니다.
+        "검토 완료"라는 말은 <b>"원본과 대조했다"</b>를 뜻해야 해요.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>관련 카드</h2>
+    <div class="card-chips">
+      <span class="card-chip">하나 · 설명서</span>
+      <span class="card-chip">둘 · 마당</span>
+      <span class="card-chip">셋 · 자동 확인</span>
+      <span class="card-chip">여섯 · 조용한 실패</span>
+    </div>
+    <p style="margin-top:14px; color:var(--muted); font-size:14px;">
+      → <a href="index.html#cards">카드 목록 보러가기</a>
+    </p>
+  </section>
+
+  <footer>
+    <div>© how-to-claude · Mac 프로파일</div>
+    <div>
+      <a href="samsung.html">Samsung →</a> ·
+      <a href="asus.html">ASUS →</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

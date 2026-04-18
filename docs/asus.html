@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ASUS 프로파일 · how-to-claude</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --panel-2: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #9a9a9a;
+    --accent: #ff7a1a;
+    --green: #3ecf8e;
+    --red: #ff5c5c;
+    --blue: #5aa2ff;
+    --purple: #b985ff;
+    --gray: #8a8a8a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                 "Pretendard", "Noto Sans KR", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 100px; }
+  .crumb { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+
+  .pnav {
+    display: flex; gap: 8px; margin-bottom: 36px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .pnav a {
+    padding: 6px 14px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--border);
+    font-size: 13px; color: var(--muted);
+  }
+  .pnav a.active {
+    background: rgba(62,207,142,0.12);
+    border-color: var(--green);
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .header { margin-bottom: 36px; }
+  .subtitle {
+    display: inline-block;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--green);
+    background: rgba(62,207,142,0.12);
+    padding: 4px 10px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: 34px; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 12px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .tag.win { color: var(--blue); border-color: rgba(90,162,255,0.3); }
+  .tag.pro { color: var(--green); border-color: rgba(62,207,142,0.3); }
+  .tag.aut { color: var(--green); border-color: rgba(62,207,142,0.3); }
+
+  section { margin-bottom: 40px; }
+  h2 {
+    font-size: 13px; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+
+  .want {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  .want b { color: var(--text); }
+
+  .problems { display: flex; flex-direction: column; gap: 10px; counter-reset: p; }
+  .problem {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px 14px 46px;
+    position: relative;
+    counter-increment: p;
+  }
+  .problem::before {
+    content: counter(p);
+    position: absolute; left: 14px; top: 14px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(62,207,142,0.15);
+    color: var(--green);
+    font-weight: 700; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .problem h4 { margin: 0 0 4px; font-size: 15px; }
+  .problem p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  .risk {
+    background: rgba(255,92,92,0.06);
+    border: 1px solid rgba(255,92,92,0.25);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .risk .label {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--red); font-weight: 700; margin-bottom: 8px;
+  }
+  .risk p { margin: 0; font-size: 14.5px; line-height: 1.65; }
+
+  .card-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .card-chip {
+    font-size: 12px; padding: 4px 10px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+  }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb"><a href="index.html">← how-to-claude 메인</a></div>
+
+  <nav class="pnav">
+    <a href="mac.html">Mac</a>
+    <a href="samsung.html">Samsung</a>
+    <a href="asus.html" class="active">ASUS</a>
+  </nav>
+
+  <header class="header">
+    <span class="subtitle">ASUS · 자동화</span>
+    <h1>저평가 매물을 빠르게 찾는 리셀 사업</h1>
+    <div class="tags">
+      <span class="tag win">ASUS · Windows</span>
+      <span class="tag pro">Claude Pro</span>
+      <span class="tag aut">페르소나 · 자동화</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>지금 하고 싶은 것</h2>
+    <div class="want">
+      중고차 시장에 존재하는 <b>정보 비대칭</b>과 <b>급매</b>를 이용해,
+      실제 가치보다 낮게 올라온 매물을 빠르게 발견하고 적정 시세로 되파는
+      <b>차익거래 기반 리셀 사업</b>을 만들고 싶다. 주식시장의 가치투자자가 저평가 종목을 찾듯이.
+    </div>
+  </section>
+
+  <section>
+    <h2>풀고 싶은 문제들</h2>
+    <div class="problems">
+
+      <div class="problem">
+        <h4>딜러망과 공개 플랫폼 사이의 가격 격차를 찾아내기</h4>
+        <p>같은 차종·같은 연식·비슷한 상태인데 채널마다 가격이 다릅니다. 그 차이를 데이터로 잡아 <b>어디서 사서 어디에 팔면 유리한지</b>를 자동으로 보여주는 눈.</p>
+      </div>
+
+      <div class="problem">
+        <h4>겉으로 드러나지 않는 가치를 점수화하기</h4>
+        <p>외장·내장 색상 조합, 선호도 높은 옵션, 관리 상태 같은 <b>정성적 요소</b>가 실제 재판매 가격을 크게 좌우합니다. 이걸 주관이 아니라 <b>근거 있는 점수</b>로 환산.</p>
+      </div>
+
+      <div class="problem">
+        <h4>급매물을 실시간으로 걸러내기</h4>
+        <p>시세 대비 크게 아래로 이탈한 매물을 실시간으로 스캔해서 <b>알림</b>. 사람이 수시로 플랫폼을 들여다보지 않아도 되게.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>AI가 특히 조심해야 하는 부분</h2>
+    <div class="risk">
+      <div class="label">카드 여섯 — 조용한 실패 + 카드 둘 — 마당</div>
+      <p>
+        돈이 바로 오가는 분야이기 때문에 위험이 두 갈래입니다.
+        하나는 <b>AI가 시세를 지어내거나 낡은 데이터로 판단</b>하는 것 — 출처와 기준일을 항상 남겨야 합니다.
+        다른 하나는 <b>AI가 실제 매수·결제까지 실행</b>하게 두는 것 — 분석·추천은 AI, <b>매매 결정과 실행은 사람</b>이라는 경계를 처음부터 못박아야 합니다.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>관련 카드</h2>
+    <div class="card-chips">
+      <span class="card-chip">하나 · 설명서 (평가 기준)</span>
+      <span class="card-chip">둘 · 마당 (매매는 사람)</span>
+      <span class="card-chip">셋 · 자동 확인</span>
+      <span class="card-chip">여섯 · 조용한 실패</span>
+    </div>
+    <p style="margin-top:14px; color:var(--muted); font-size:14px;">
+      → <a href="index.html#cards">카드 목록 보러가기</a>
+    </p>
+  </section>
+
+  <footer>
+    <div>© how-to-claude · ASUS 프로파일</div>
+    <div>
+      <a href="mac.html">Mac →</a> ·
+      <a href="samsung.html">Samsung →</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
