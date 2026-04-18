@@ -2,13 +2,13 @@
 
 비개발자가 Claude를 제대로 쓰기 위한 안내서.
 
-**웹사이트**: https://ojin0611.github.io/how-to-claude/ (예정)
+**웹사이트**: https://ojin0611.github.io/how-to-claude/
 
 ---
 
 ## 이 저장소에 있는 것
 
-- `web/` — 공개 웹사이트 소스. GitHub Pages로 배포됨.
+- `docs/` — 공개 웹사이트 소스. GitHub Pages로 배포됨.
   - `index.html` — 메인 (6장의 카드 + 구조 설명)
   - `deeper.html` — Claude Code 구조 더 깊이
   - `story-youtube.html` — 사례 하나 (익명화)
@@ -24,7 +24,7 @@
 
 ```bash
 # Python 기본 서버로 바로 열기
-cd web && python3 -m http.server 8000
+cd docs && python3 -m http.server 8000
 # 브라우저에서 http://localhost:8000
 ```
 
