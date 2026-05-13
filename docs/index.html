@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>How to Claude — AI에게 일 맡기는 법</title>
+<title>How to Claude — 비개발자를 위한 AI 소통법</title>
+<meta name="description" content="AI 도구에게 일을 잘 시키는 법. 비개발자 대상 재능기부 강의 슬라이드." />
 <style>
   :root {
     --bg: #0a0a0a;
@@ -29,787 +30,1182 @@
     font-size: 16px;
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
+  h1, h2, h3 { letter-spacing: -0.01em; }
 
-  .wrap { max-width: 980px; margin: 0 auto; padding: 80px 24px 120px; }
-
-  /* Top customer nav */
-  .top-nav {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 48px;
-    padding: 14px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    align-items: stretch;
-    flex-wrap: wrap;
-  }
-  .top-nav .label {
-    font-size: 11px; letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 8px 10px 8px 4px;
-    align-self: center;
-    white-space: nowrap;
-  }
-  .top-nav a.person {
-    flex: 1;
-    min-width: 160px;
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    transition: border-color 0.15s, transform 0.15s;
-    text-decoration: none !important;
-  }
-  .top-nav a.person:hover {
-    border-color: var(--accent);
-    transform: translateY(-1px);
-  }
-  .top-nav .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    flex: 0 0 8px;
-  }
-  .top-nav a.person[data-os="mac"] .dot { background: var(--accent); }
-  .top-nav a.person[data-os="win"] .dot { background: var(--blue); }
-  .top-nav .name { font-weight: 700; font-size: 15px; }
-  .top-nav .env { font-size: 12px; color: var(--muted); }
-  .top-nav .hub-link {
-    align-self: center;
-    font-size: 12px;
-    padding: 8px 12px;
-    color: var(--muted);
+  /* Slide deck container */
+  .deck {
+    position: relative;
+    min-height: 100vh;
   }
 
-  @media (max-width: 720px) {
-    .top-nav .label { width: 100%; }
-    .top-nav a.person { min-width: 0; }
+  /* Each slide */
+  .slide {
+    display: none;
+    min-height: 100vh;
+    padding: 80px 24px 140px;
+    animation: fadeIn 0.3s ease;
   }
-  section { margin-bottom: 72px; }
-  h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.01em; }
-  h1 { font-size: 44px; line-height: 1.25; margin: 0 0 12px; }
-  h2 { font-size: 28px; margin: 0 0 14px; }
-  h3 { font-size: 20px; margin: 0 0 12px; }
-  .lead { color: var(--muted); font-size: 18px; margin: 0 0 8px; }
-  .accent { color: var(--accent); }
-  .small { font-size: 14px; color: var(--muted); }
+  .slide.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide-inner {
+    max-width: 920px;
+    margin: 0 auto;
+  }
 
-  .hero {
-    padding: 24px 0 8px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 64px;
-  }
-  .hero .tagline {
+  /* Slide header */
+  .slide-tag {
     display: inline-block;
-    font-size: 13px;
-    color: var(--accent);
+    padding: 4px 12px;
     background: var(--accent-dim);
-    padding: 4px 10px;
-    border-radius: 999px;
-    margin-bottom: 20px;
-  }
-
-  .section-intro {
-    color: var(--muted);
-    font-size: 16px;
-    margin: 0 0 28px;
-    max-width: 720px;
-  }
-
-  /* Persona colors */
-  .p-create  { --pc: var(--purple); }
-  .p-analyze { --pc: var(--blue); }
-  .p-automate{ --pc: var(--green); }
-
-  /* Case cards */
-  .persona-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-  }
-  a.persona { display: flex; flex-direction: column; }
-  a.persona:hover { border-color: var(--accent); transform: translateY(-2px); transition: 0.15s; }
-  .persona {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
-    display: flex; flex-direction: column; gap: 14px;
-    position: relative;
-    overflow: hidden;
-  }
-  .persona::before {
-    content: "";
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: var(--pc);
-  }
-  .persona .who {
-    font-size: 12px; letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--pc);
-    font-weight: 600;
-  }
-  .persona .title-line {
-    font-size: 18px; font-weight: 700;
-    line-height: 1.4;
-    color: var(--text);
-  }
-  .persona .quote {
-    font-size: 14.5px;
-    line-height: 1.6;
-    color: var(--muted);
-    font-style: italic;
-    padding: 12px 14px;
-    background: var(--panel-2);
-    border-left: 2px solid var(--pc);
-    border-radius: 4px;
-  }
-  .persona .desc {
-    font-size: 14px; color: var(--muted);
-    margin: 0;
-  }
-  .persona .order {
-    margin-top: auto;
-    padding-top: 14px;
-    border-top: 1px dashed var(--border);
-    font-size: 14px;
-  }
-  .persona .order .chip {
-    display: inline-block;
-    background: var(--pc);
-    color: #0a0a0a;
-    font-weight: 700;
-    font-size: 12px;
-    padding: 3px 9px;
-    border-radius: 6px;
-    margin: 0 4px 4px 0;
-  }
-  .persona .order .arrow { color: var(--muted); margin: 0 2px; }
-
-  /* Concept cards (What is Claude Code) */
-  .concept-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 40px;
-  }
-  .concept {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px;
-  }
-  .concept .concept-tag {
-    font-size: 11px; letter-spacing: 0.08em;
-    text-transform: uppercase;
     color: var(--accent);
-    margin-bottom: 8px;
-    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    border-radius: 999px;
+    margin-bottom: 22px;
+    text-transform: uppercase;
   }
-  .concept h3 {
-    font-size: 22px;
-    margin: 0 0 12px;
-    letter-spacing: -0.01em;
-  }
-  .concept h3 .eng {
-    font-size: 13px;
+  .slide-num {
     color: var(--muted);
-    font-weight: 500;
-    letter-spacing: 0;
-  }
-  .concept-one {
-    font-size: 15px;
-    margin: 0 0 10px;
-    color: var(--text);
-    font-weight: 600;
-  }
-  .concept-ex {
-    font-size: 14px;
-    margin: 0;
-    color: var(--muted);
-    line-height: 1.65;
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
   }
 
-  /* Nested diagram */
-  .nest-wrap {
-    padding: 30px;
+  h1 {
+    font-size: 42px;
+    line-height: 1.22;
+    margin: 0 0 20px;
+    font-weight: 700;
+  }
+  h1 .accent { color: var(--accent); }
+  h2 {
+    font-size: 30px;
+    line-height: 1.3;
+    margin: 0 0 18px;
+    font-weight: 700;
+  }
+  h2 .accent { color: var(--accent); }
+  h3 {
+    font-size: 18px;
+    margin: 0 0 10px;
+  }
+
+  .lead {
+    font-size: 19px;
+    color: var(--text);
+    line-height: 1.65;
+    margin: 0 0 14px;
+  }
+  .lead-muted {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin: 0 0 14px;
+  }
+
+  /* Hero slide */
+  .hero-slide .speaker-card {
+    margin-top: 38px;
+    padding: 24px 28px;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 14px;
-  }
-  .nest {
-    border-radius: 12px;
-    padding: 22px 22px 22px;
-    position: relative;
-  }
-  .nest-harness {
-    background: rgba(62,207,142,0.06);
-    border: 1.5px solid rgba(62,207,142,0.35);
-  }
-  .nest-agent {
-    background: rgba(90,162,255,0.06);
-    border: 1.5px solid rgba(90,162,255,0.35);
-    margin-top: 14px;
-  }
-  .nest-llm {
-    background: rgba(255,122,26,0.08);
-    border: 1.5px solid rgba(255,122,26,0.45);
-    margin-top: 14px;
-    padding: 20px;
-  }
-  .nest-label {
-    font-size: 14px;
-    font-weight: 700;
     display: flex;
-    align-items: baseline;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 22px;
+    align-items: flex-start;
   }
-  .nest-harness > .nest-label { color: var(--green); }
-  .nest-agent > .nest-label { color: var(--blue); }
-  .nest-llm > .nest-label { color: var(--accent); }
-  .nest-num {
-    font-family: "SF Mono", ui-monospace, monospace;
+  .hero-slide .speaker-card .icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex: 0 0 48px;
+  }
+  .hero-slide .speaker-card .who {
     font-size: 13px;
-    opacity: 0.7;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
   }
-  .nest-sub {
+  .hero-slide .speaker-card h3 { margin: 0 0 6px; font-size: 17px; }
+  .hero-slide .speaker-card p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.65; }
+
+  .agenda {
+    margin-top: 32px;
+    padding: 24px 28px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .agenda h4 {
+    margin: 0 0 14px;
     font-size: 13px;
-    font-weight: 400;
     color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
-  .nest-caption {
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px dashed var(--border);
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.65;
+  .agenda ol {
+    margin: 0; padding-left: 20px;
+    font-size: 15.5px;
+    line-height: 1.9;
+  }
+  .agenda ol li::marker { color: var(--accent); font-weight: 600; }
+
+  /* Big quote / mindset */
+  .quote-band {
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 48px;
     text-align: center;
+    margin: 16px 0;
   }
-  .nest-caption b { color: var(--text); }
-
-  @media (max-width: 720px) {
-    .concept-grid { grid-template-columns: 1fr; }
-    .nest-wrap { padding: 18px; }
-    .nest { padding: 16px; }
+  .quote-band .q {
+    font-size: 26px;
+    line-height: 1.55;
+    max-width: 720px;
+    margin: 0 auto 14px;
   }
+  .quote-band .q .accent { color: var(--accent); }
+  .quote-band .cite { color: var(--muted); font-size: 14px; margin: 0; }
 
-  /* Cards */
-  .cards-grid {
+  /* Two column compare */
+  .compare {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 18px;
+    margin: 22px 0 8px;
   }
+  .col {
+    border-radius: 14px;
+    padding: 26px 26px 28px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .col.dim { background: rgba(255, 92, 92, 0.03); border-color: rgba(255, 92, 92, 0.2); }
+  .col.bright { background: rgba(62, 207, 142, 0.04); border-color: rgba(62, 207, 142, 0.22); }
+  .col h3 { margin: 0 0 6px; font-size: 18px; }
+  .col .sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    letter-spacing: 0.04em;
+  }
+  .col.dim h3 { color: var(--red); }
+  .col.bright h3 { color: var(--green); }
+  .col ul { margin: 0; padding-left: 18px; font-size: 14.5px; line-height: 1.75; }
+  .col ul li { margin-bottom: 6px; }
+  .col ul li b { color: var(--text); }
+
+  /* Cards */
   .card {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 28px;
-    display: flex; flex-direction: column; gap: 14px;
-    transition: border-color 0.15s ease, transform 0.15s ease;
+    padding: 22px 24px;
+    margin-bottom: 14px;
   }
-  .card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
-  .card.full { grid-column: 1 / -1; }
-  .card .num {
-    font-family: "SF Mono", ui-monospace, monospace;
-    color: var(--accent);
-    font-size: 13px;
-    letter-spacing: 0.1em;
-  }
-  .card h3 { margin: 0; }
-  .card .tl {
-    font-size: 15px;
-    color: var(--text);
-    padding: 12px 14px;
-    background: var(--panel-2);
-    border-left: 3px solid var(--accent);
-    border-radius: 4px;
-    line-height: 1.55;
-  }
-  .card .block { margin-top: 4px; }
-  .card .block .label {
-    font-size: 11px; letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-  .card .block p { margin: 0; font-size: 15px; color: var(--text); line-height: 1.7; }
-  .card .block p + p { margin-top: 10px; }
+  .card h3 { margin: 0 0 8px; font-size: 16px; }
+  .card p { margin: 0 0 8px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card ul { margin: 6px 0 0; padding-left: 20px; }
+  .card ul li { margin-bottom: 4px; }
 
-  /* Story (persona-colored anecdote) */
-  .story {
-    background: #0f0f0f;
+  /* Numbered points (5 points list) */
+  .points { display: grid; gap: 14px; }
+  .point {
+    display: flex; gap: 18px;
+    padding: 18px 22px;
+    background: var(--panel);
     border: 1px solid var(--border);
-    border-left: 3px solid var(--pc, var(--accent));
-    border-radius: 10px;
-    padding: 16px 18px;
-    margin-top: 6px;
+    border-radius: 12px;
   }
-  .story .who {
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--pc, var(--accent));
-    margin-bottom: 8px;
-    font-weight: 600;
+  .point .n {
+    flex: 0 0 36px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-family: "SF Mono", ui-monospace, monospace;
   }
-  .story p {
-    margin: 0;
-    font-size: 14.5px;
-    line-height: 1.7;
-    color: #d8d8d8;
-  }
-  .story p + p { margin-top: 10px; }
-  .story.placeholder::after {
-    content: "· 예시 (사용자 실제 사례로 교체 예정)";
-    display: block;
-    margin-top: 10px;
-    font-size: 11px;
-    color: var(--muted);
-    font-style: italic;
-  }
-
-  .card .do {
-    margin-top: 6px;
-    padding: 14px 16px;
-    background: rgba(62, 207, 142, 0.08);
-    border: 1px solid rgba(62, 207, 142, 0.2);
-    border-radius: 10px;
-    font-size: 14.5px;
-    line-height: 1.65;
-  }
-  .card .do b { color: var(--green); }
+  .point .body h3 { margin: 0 0 4px; font-size: 16px; }
+  .point .body p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.65; }
 
   /* Before / After */
   .ba {
-    margin-top: 18px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
+    margin: 14px 0 4px;
   }
   .ba-col {
     border-radius: 12px;
-    padding: 20px;
+    padding: 18px 20px;
     border: 1px solid var(--border);
   }
-  .ba-col.before { background: rgba(255,92,92,0.04); border-color: rgba(255,92,92,0.2); }
-  .ba-col.after { background: rgba(62,207,142,0.04); border-color: rgba(62,207,142,0.2); }
-  .ba-col h4 { margin: 0 0 10px; font-size: 14px; }
+  .ba-col.before { background: rgba(255,92,92,0.04); border-color: rgba(255,92,92,0.22); }
+  .ba-col.after { background: rgba(62,207,142,0.04); border-color: rgba(62,207,142,0.22); }
+  .ba-col h4 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
   .ba-col.before h4 { color: var(--red); }
   .ba-col.after h4 { color: var(--green); }
-  .ba-col ul { margin: 0; padding-left: 18px; font-size: 14.5px; color: var(--muted); line-height: 1.7; }
-  .ba-col ul li { margin-bottom: 6px; }
-
-  /* Mindset band */
-  .band {
-    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 40px;
-    text-align: center;
-  }
-  .band .quote {
-    font-size: 22px;
+  .ba-col p { margin: 0 0 8px; font-size: 14.5px; line-height: 1.65; }
+  .ba-col p:last-child { margin-bottom: 0; }
+  .ba-col .quote {
+    display: block;
+    background: rgba(255,255,255,0.04);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 13px;
     line-height: 1.6;
-    max-width: 680px;
-    margin: 0 auto 10px;
+    color: #d8d8d8;
+    white-space: pre-wrap;
+    margin-top: 6px;
   }
-  .band .cite { color: var(--muted); font-size: 14px; }
 
-  /* Card 6 episode list */
-  .episodes {
+  /* Template box */
+  .template {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-size: 14.5px;
+    line-height: 1.8;
+    margin: 14px 0;
+  }
+  .template b { color: var(--accent); }
+  .template .tag {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    margin: 0 2px;
+    font-weight: 500;
+  }
+
+  /* Tip / Warn */
+  .tip, .warn {
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 14.5px;
+    line-height: 1.65;
+    margin-top: 14px;
+  }
+  .tip { background: rgba(62, 207, 142, 0.06); border: 1px solid rgba(62, 207, 142, 0.22); }
+  .tip b { color: var(--green); }
+  .tip .icon { color: var(--green); margin-right: 6px; }
+  .warn { background: rgba(255, 122, 26, 0.06); border: 1px solid rgba(255, 122, 26, 0.22); }
+  .warn b { color: var(--accent); }
+
+  /* Folder tree */
+  .tree {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    line-height: 1.75;
+    color: #d8d8d8;
+    margin: 12px 0;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .tree .c { color: var(--muted); }
+  .tree .a { color: var(--accent); }
+
+  /* Agent diagram */
+  .agent-flow {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px;
+    margin: 18px 0 0;
+  }
+  .flow-row {
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  .flow-row:last-child { margin-bottom: 0; }
+  .flow-step {
+    padding: 12px 18px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .flow-step.start { border-color: var(--accent); color: var(--accent); }
+  .flow-step.loop { border-color: var(--blue); color: var(--blue); }
+  .flow-step.end { border-color: var(--green); color: var(--green); }
+  .flow-arrow { color: var(--muted); font-size: 18px; }
+
+  /* CTA */
+  .cta-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 14px;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
     margin-top: 8px;
   }
-  .episode {
-    padding: 18px;
-    background: #0f0f0f;
+  .cta {
+    display: block;
+    padding: 22px 24px;
+    background: var(--panel);
     border: 1px solid var(--border);
-    border-top: 3px solid var(--pc, var(--accent));
-    border-radius: 10px;
+    border-radius: 12px;
+    color: var(--text);
+    transition: border-color 0.15s, transform 0.15s;
   }
-  .episode .h {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    color: var(--pc, var(--accent));
-    font-weight: 600;
-    margin-bottom: 8px;
+  .cta:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+    transform: translateY(-1px);
   }
-  .episode p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.65;
-    color: #d8d8d8;
+  .cta .label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
   }
+  .cta .title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+  .cta .desc { color: var(--muted); font-size: 13.5px; line-height: 1.6; }
 
-  footer {
-    margin-top: 80px;
-    padding-top: 24px;
+  /* ─── Slide controls ─── */
+  .controls {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(8px);
     border-top: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 100;
+  }
+  .controls button {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .controls button:hover { border-color: var(--accent); }
+  .controls button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .controls button.active { background: var(--accent); color: #0a0a0a; border-color: var(--accent); }
+  .controls .counter {
+    font-family: "SF Mono", ui-monospace, monospace;
     color: var(--muted);
     font-size: 13px;
-    display: flex; justify-content: space-between; flex-wrap: wrap;
-    gap: 12px;
+    min-width: 70px;
+    text-align: center;
+  }
+  .controls .progress {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 0 8px;
+  }
+  .controls .progress .bar {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+  .controls .title-mini {
+    font-size: 13px;
+    color: var(--muted);
+    margin-right: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+  }
+  .controls .hint {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
-  .anchor { scroll-margin-top: 24px; }
+  /* Speaker notes panel */
+  .notes-panel {
+    position: fixed;
+    bottom: 56px;
+    left: 0; right: 0;
+    max-height: 38vh;
+    overflow-y: auto;
+    background: #0d0d0d;
+    border-top: 1px solid var(--accent);
+    padding: 18px 32px 22px;
+    z-index: 99;
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+  }
+  .notes-panel.open { transform: translateY(0); }
+  .notes-panel .label {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .notes-panel .content {
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: #d8d8d8;
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .notes-panel .content p { margin: 0 0 8px; }
+  .notes-panel .content p:last-child { margin-bottom: 0; }
+  .notes-panel .content b { color: var(--accent); }
+  .notes-panel .content ul { margin: 6px 0 8px; padding-left: 20px; }
 
-  @media (max-width: 820px) {
-    h1 { font-size: 32px; }
+  .speaker-notes { display: none; }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    h1 { font-size: 30px; }
     h2 { font-size: 22px; }
-    .persona-grid, .cards-grid, .ba, .episodes { grid-template-columns: 1fr; }
-    .wrap { padding: 48px 18px 80px; }
-    .band { padding: 28px 20px; }
-    .band .quote { font-size: 18px; }
+    .slide { padding: 50px 18px 130px; }
+    .quote-band { padding: 28px 22px; }
+    .quote-band .q { font-size: 19px; }
+    .compare, .ba, .cta-grid { grid-template-columns: 1fr; }
+    .controls .title-mini { display: none; }
+    .controls { padding: 10px 14px; gap: 8px; }
+    .hero-slide .speaker-card { flex-direction: column; }
+    .agent-flow { padding: 18px; }
+    .flow-step { font-size: 12.5px; padding: 10px 14px; }
   }
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<div class="deck" id="deck">
 
-  <!-- TOP PROFILE NAV -->
-  <nav class="top-nav">
-    <div class="label">프로파일 →</div>
-    <a class="person" data-os="mac" href="mac.html">
-      <span class="dot"></span>
-      <span>
-        <span class="name">Mac</span>
-        <div class="env">포트폴리오 대시보드</div>
-      </span>
-    </a>
-    <a class="person" data-os="win" href="samsung.html">
-      <span class="dot"></span>
-      <span>
-        <span class="name">Samsung</span>
-        <div class="env">무엇을 만들지 탐색 중</div>
-      </span>
-    </a>
-    <a class="person" data-os="win" href="asus.html">
-      <span class="dot"></span>
-      <span>
-        <span class="name">ASUS</span>
-        <div class="env">중고차 리셀 사업</div>
-      </span>
-    </a>
-  </nav>
+  <!-- ─── SLIDE 1: 강의 목적 / 강사 소개 ─── -->
+  <section class="slide hero-slide" data-title="강의 목적">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 01 / 강의 목적</div>
+      <span class="slide-tag">재능기부 강의</span>
+      <h1>AI에게 일을 잘 시키는 법<br/><span class="accent">— 비개발자를 위한 가이드</span></h1>
+      <p class="lead">ChatGPT나 Gemini만 써보신 분들이 "AI가 자꾸 거짓말한다", "내가 시킨 게 아니라 자기 식대로 한다"고 느끼는 그 답답함을, 오늘 같이 풀어볼게요.</p>
 
-  <!-- HERO -->
-  <header class="hero">
-    <span class="tagline">초안 v0.3 · 비개발자용</span>
-    <h1>AI에게 일을 맡길 때,<br/><span class="accent">틀</span>이 결과를 바꾼다</h1>
-    <p class="lead">좋은 지시, 안전한 경계, 스스로 점검하는 흐름 — 그리고 그 모든 것을 <b>언제 만들지</b> 아는 것.</p>
-    <p class="small">세 명의 실제 사용자 이야기를 따라가며 읽는 여섯 장의 카드</p>
-  </header>
+      <div class="speaker-card">
+        <div class="icon">👋</div>
+        <div>
+          <div class="who">강사</div>
+          <h3>개발자입니다 · 오늘은 재능기부로 왔어요</h3>
+          <p>AI 코딩 도구(Claude Code, Codex)를 매일 쓰는 사람으로서, AI를 거의 안 써보신 분들께 <b>AI와 잘 이야기하는 방법</b>을 같이 정리해보러 왔습니다. 오늘 끝나면 "내 일에 어떻게 적용할지" 한 줄로 적어 가실 수 있게 만드는 게 목표예요.</p>
+        </div>
+      </div>
 
-  <!-- MINDSET BAND -->
-  <section>
-    <div class="band">
-      <p class="quote">"AI가 똑똑해질수록, 틀은 <span class="accent">더 단순</span>해져야 한다."</p>
-      <p class="cite">— AI 연구자 리처드 서튼의 생각을 다듬어서</p>
+      <div class="agenda">
+        <h4>오늘 다룰 것</h4>
+        <ol>
+          <li>왜 범용 AI는 신뢰가 안 갈까 (ChatGPT/Gemini의 한계)</li>
+          <li>코딩용 AI 도구는 무엇이 다른가 — AI Agent라는 개념</li>
+          <li>5단계로 정리한 "AI와 소통하는 법"</li>
+          <li>실전 예제 — 국어 예상문제집을 직접 만들어 보기</li>
+        </ol>
+      </div>
+    </div>
+    <div class="speaker-notes">
+      <p><b>오프닝 한 줄</b>: "오늘 끝까지 같이 가시면, 댁에 가셔서 본인 일에 바로 적용할 수 있는 한 줄짜리 작업법을 가지고 가시게 됩니다."</p>
+      <p><b>청중 파악 질문(손 들기로):</b></p>
+      <ul>
+        <li>"ChatGPT나 Gemini 써보신 분?"</li>
+        <li>"AI 결과가 만족스럽지 않아서 그냥 닫아버린 적 있는 분?"</li>
+        <li>"Claude Code, Codex 같은 이름 들어보신 분?" (대부분 없으실 거예요. 정상입니다.)</li>
+      </ul>
+      <p><b>강조 포인트</b>: "저는 개발자지만, 오늘 강의는 코드 한 줄도 안 보여드릴 거예요. AI를 <b>같이 일하는 동료</b>로 다루는 방법만 보여드립니다."</p>
+      <p><b>분위기 메모</b>: 초반에는 "맞아요, 답답하시죠"로 공감 먼저. 도구 자랑은 5번 슬라이드 이후로 미루기.</p>
     </div>
   </section>
 
-  <!-- DIAGNOSIS — 3 personas -->
-  <section id="cases" class="anchor">
-    <h2>먼저, 앞서간 두 사람</h2>
-    <p class="section-intro">
-      이 페이지의 여섯 카드는 <b>실제 두 사람의 경험</b>에서 뽑혔습니다.
-      상황은 완전히 다르지만, 만난 함정과 깨달음은 신기하게 겹쳤어요.
-      둘 다 개발자가 아닙니다.
-    </p>
+  <!-- ─── SLIDE 2: 흔히 겪는 고충 ─── -->
+  <section class="slide" data-title="범용 AI의 한계">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 02 / 문제 인식</div>
+      <span class="slide-tag">공감</span>
+      <h2><span class="accent">"AI 한 번 써봤는데</span><br/>그냥 안 쓰게 되더라"</h2>
+      <p class="lead-muted">ChatGPT·Gemini를 써보면 흔히 만나는 세 가지 답답함이 있어요. 이게 본인 잘못이 아니라 <b>도구의 구조적인 한계</b>입니다.</p>
 
-    <div class="persona-grid">
-
-      <!-- Case A: Creative -->
-      <a class="persona p-create" href="story-youtube.html" style="color: var(--text); text-decoration: none;">
-        <div class="who">사례 하나 · 창작자</div>
-        <div class="title-line">퍼스널 브랜드 유튜브<br/>채널을 시작한 지인</div>
-        <p class="quote">"회사 밖에서 내 거 해보고 싶은데, 어디서부터 시작할지 모르겠어요."</p>
-        <p class="desc">AI 한 번도 써본 적 없던 30대 커리어 전환기. 채널 콘셉트부터 첫 영상 기획까지 Claude와 같이 정리. <b>'먼저 만들어봐야 안다'</b>를 몸으로 배운 사례.</p>
-        <div class="order">
-          관련 카드 &nbsp;
-          <span class="chip">다섯</span><span class="chip">하나</span><span class="chip">여섯</span>
-          <span style="margin-left: 10px; color: var(--accent);">이야기 전체 →</span>
+      <div class="points">
+        <div class="point">
+          <div class="n">01</div>
+          <div class="body">
+            <h3>그럴듯한 거짓말을 한다 (환각)</h3>
+            <p>"○○ 시인의 대표작 알려줘" → 실제로 존재하지 않는 시 제목을 자신만만하게 알려준다. 출처가 없어서 검증이 어렵다.</p>
+          </div>
         </div>
-      </a>
-
-      <!-- Case B: Automator -->
-      <a class="persona p-automate" href="story-dk.html" style="color: var(--text); text-decoration: none;">
-        <div class="who">사례 둘 · 자동화</div>
-        <div class="title-line">반복 보고서 작성을<br/>자동화하려는 지인</div>
-        <p class="quote">"매달 만드는 품질관리 보고서, AI한테 넘기고 싶어요."</p>
-        <p class="desc">제약회사 품질관리 담당. 이미 목표가 분명한 상태에서 시작. "AI의 자기 채점"이라는 <b>조용한 실패</b>를 한 번 만난 뒤 진짜 구조가 만들어진 사례.</p>
-        <div class="order">
-          관련 카드 &nbsp;
-          <span class="chip">하나</span><span class="chip">셋</span><span class="chip">넷</span><span class="chip">여섯</span>
-          <span style="margin-left: 10px; color: var(--accent);">이야기 전체 →</span>
+        <div class="point">
+          <div class="n">02</div>
+          <div class="body">
+            <h3>같은 질문에 매번 다른 답</h3>
+            <p>"양식 유지해서 한 번 더" 했을 뿐인데 글꼴·번호 매김·정답 위치가 다 달라진다. 결국 마지막에 내가 다 손봐야 한다.</p>
+          </div>
         </div>
-      </a>
+        <div class="point">
+          <div class="n">03</div>
+          <div class="body">
+            <h3>내 자료를 잘 못 본다</h3>
+            <p>PDF 한 장 올리는 것도 어렵고, 수십 장은 더더욱. 결국 캡쳐 → 붙여넣기 → 캡쳐 → 붙여넣기. 하루가 다 간다.</p>
+          </div>
+        </div>
+      </div>
 
+      <div class="warn" style="margin-top: 22px;">
+        <b>핵심</b>: 이 세 가지는 "AI가 멍청해서"가 아니라, <b>범용 채팅 도구가 그 일에 맞게 만들어지지 않았기 때문</b>입니다. 도구를 바꾸면 절반 이상이 해결됩니다.
+      </div>
+    </div>
+    <div class="speaker-notes">
+      <p><b>인터랙션</b>: 각 항목마다 "이런 경험 있으신 분?" 손 들기 한 번씩. 거의 다 손 듭니다. → "혼자 그러신 게 아니에요"로 공감 만들기.</p>
+      <p><b>이 슬라이드의 핵심 메시지</b>: <b>"문제는 당신이 아니라 도구"</b>. 청중이 자기 탓하지 않도록 명확히 짚어주기.</p>
+      <p><b>다음 슬라이드 연결</b>: "그럼 어떤 도구를 써야 할까요? 사실 도구가 두 종류로 나뉩니다."</p>
+      <p><b>주의</b>: ChatGPT/Gemini가 나쁘다는 인상을 주지 말 것. "쓰는 자리가 다르다"로 표현. 청중 중에 이미 잘 쓰는 분이 있으면 무시당했다고 느낄 수 있음.</p>
     </div>
   </section>
 
-  <!-- WHAT IS CLAUDE CODE -->
-  <section id="what-is" class="anchor">
-    <h2>잠깐 — Claude Code가 뭐예요?</h2>
-    <p class="section-intro">
-      카드를 읽기 전에 세 단어만 짚고 갑니다. 이 셋이 합쳐진 것이 Claude Code예요.
-    </p>
+  <!-- ─── SLIDE 3: 범용 vs 코딩용 AI ─── -->
+  <section class="slide" data-title="범용 vs 코딩용 AI">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 03 / 도구의 분류</div>
+      <span class="slide-tag">개념</span>
+      <h2>AI 도구는 <span class="accent">두 종류</span>로 나뉩니다</h2>
+      <p class="lead-muted">"코딩용"이라는 이름은 헷갈리지만, 실제로는 <b>"내 PC에서 일하는 비서"</b>에 가깝다고 생각해주세요.</p>
 
-    <div class="concept-grid">
-
-      <div class="concept">
-        <div class="concept-tag">1. AI의 뇌</div>
-        <h3>LLM</h3>
-        <p class="concept-one">말을 이해하고 만드는 AI 자체.</p>
-        <p class="concept-ex">우리가 흔히 "AI랑 대화한다" 할 때 그 AI. Claude도, ChatGPT도 여기에 해당해요. <b>뇌만 있고 손발은 없습니다.</b></p>
-      </div>
-
-      <div class="concept">
-        <div class="concept-tag">2. 손발까지 달린 AI</div>
-        <h3>에이전트 <span class="eng">Agent</span></h3>
-        <p class="concept-one">그 뇌에 <b>도구를 쥐어준 것</b>.</p>
-        <p class="concept-ex">파일을 직접 읽고, 쓰고, 찾고, 무언가를 실행할 수 있게 됐어요. 대화만 하던 AI가 이제 <b>일을 실제로 합니다.</b></p>
-      </div>
-
-      <div class="concept">
-        <div class="concept-tag">3. 일하는 방</div>
-        <h3>하네스 <span class="eng">Harness</span></h3>
-        <p class="concept-one">에이전트가 일할 <b>방의 배치와 규칙</b>.</p>
-        <p class="concept-ex">"해도 되는 일 / 안 되는 일 / 자동으로 확인되는 장치" — 당신이 만들어 두는 틀입니다. 이 페이지 카드가 전부 이 얘기예요.</p>
-      </div>
-
-    </div>
-
-    <!-- Nested diagram -->
-    <div class="nest-wrap">
-      <div class="nest nest-harness">
-        <div class="nest-label">
-          <span class="nest-num">③</span> 하네스 <span class="nest-sub">당신이 정한 틀 · 마당 · 자동점검</span>
+      <div class="compare">
+        <div class="col dim">
+          <h3>범용 AI 도구</h3>
+          <div class="sub">ChatGPT, Gemini, Claude 웹</div>
+          <ul>
+            <li><b>대화창</b>에서 글로 주고받기</li>
+            <li>빠르고 가볍다 — 휴대폰으로도 OK</li>
+            <li>파일 몇 개는 가능, 수십 개는 어렵다</li>
+            <li>내 PC의 폴더는 못 본다</li>
+            <li>결과를 <b>파일로 받기</b> 번거롭다</li>
+            <li>가벼운 질문·아이디어 짜기에 좋음</li>
+          </ul>
         </div>
-        <div class="nest nest-agent">
-          <div class="nest-label">
-            <span class="nest-num">②</span> 에이전트 <span class="nest-sub">손발: 읽기 · 쓰기 · 찾기 · 실행</span>
-          </div>
-          <div class="nest nest-llm">
-            <div class="nest-label">
-              <span class="nest-num">①</span> LLM <span class="nest-sub">뇌: Claude</span>
-            </div>
-          </div>
+        <div class="col bright">
+          <h3>코딩용 AI 도구 (Agent)</h3>
+          <div class="sub">Claude Code, Codex 등</div>
+          <ul>
+            <li><b>PC에 깔리는 도구</b> — 폴더 안에서 일함</li>
+            <li>지정한 폴더의 <b>파일을 직접 읽고 만든다</b></li>
+            <li>웹 검색, 계산 등 도구를 <b>스스로 골라 씀</b></li>
+            <li>결과가 <b>실제 파일</b>로 떨어진다 (워드/엑셀/PDF)</li>
+            <li>오래 걸리는 일을 <b>혼자 끝까지</b> 한다</li>
+            <li>반복·대량·검증이 필요한 일에 강함</li>
+          </ul>
         </div>
       </div>
-      <div class="nest-caption">
-        <b>Claude Code</b> = 이 셋이 합쳐진 도구. 가운데(①)는 Anthropic이 만들고, 바깥(③)은 <b>당신이 만듭니다.</b>
-      </div>
-      <div class="nest-caption" style="margin-top: 10px; padding-top: 0; border-top: none;">
-        <a href="deeper.html">더 깊이 — "그래서 내가 뭘 만들고, 뭘 안 만드는 거야?" →</a>
+
+      <div class="tip">
+        <b><span class="icon">✓</span>오늘 사용할 도구</b>
+        <b>Claude Code</b>(Anthropic)와 <b>Codex</b>(OpenAI)가 대표적입니다. 이름은 무섭게 들리지만, 둘 다 <b>"내 PC의 한 폴더에 같이 앉은 AI 동료"</b>라고 생각하시면 돼요. 코드를 안 쓰셔도 됩니다.
       </div>
     </div>
-
-  </section>
-
-  <!-- CARDS -->
-  <section id="cards" class="anchor">
-    <h2>여섯 장의 카드</h2>
-    <p class="section-intro">
-      각 카드 안에는 위에서 만난 두 지인 중 한 사람의 이야기가 들어 있습니다.
-      색이 있는 줄로 누구의 이야기인지 표시해뒀어요.
-    </p>
-
-    <div class="cards-grid">
-
-      <!-- Card 1 -->
-      <article class="card">
-        <div class="num">카드 하나</div>
-        <h3>설명서를 먼저 써라</h3>
-        <div class="tl">AI에게 일을 시키기 전에, "해도 되는 일"과 "절대 하면 안 되는 일"을 한 장의 종이에 써둔다.</div>
-
-        <div class="block">
-          <div class="label">왜 중요한가</div>
-          <p>사람과 일할 때도 "알아서 잘 해봐"는 사고의 지름길입니다. AI는 <b>써둔 경계만</b> 지켜요. 써두지 않은 건 지키지 않습니다.</p>
-        </div>
-
-        <div class="story p-automate">
-          <div class="who">자동화 — 실제 사례</div>
-          <p>매달 품질관리 보고서를 AI에게 맡기려 한 분이 있었습니다. 처음엔 AI가 매번 <b>조금씩 다른 양식</b>으로 결과를 냈어요. 어떤 날은 표 순서가 바뀌고, 어떤 날은 단위 표기가 달라지고.</p>
-          <p>그래서 한 장짜리 설명서를 썼습니다 — "시험 항목은 이 순서 / 단위는 이 표기 / 빈 값은 이렇게 표시". 그 다음부터 결과가 <b>일관되게</b> 나오기 시작했어요.</p>
-        </div>
-
-        <div class="do"><b>오늘 바로 해보기</b> — AI에게 자주 시키는 일 하나를 골라, "해도 되는 것 다섯 줄 / 하면 안 되는 것 다섯 줄"을 적어 다음 대화 맨 앞에 붙여보기.</div>
-      </article>
-
-      <!-- Card 2 -->
-      <article class="card">
-        <div class="num">카드 둘</div>
-        <h3>AI가 뛰어놀 마당을 정해줘라</h3>
-        <div class="tl">전부 막으면 일을 못 하고, 다 풀어놓으면 사고가 납니다. <b>위험한 몇 가지만</b> 정확히 막아두면 충분합니다.</div>
-
-        <div class="block">
-          <div class="label">왜 중요한가</div>
-          <p>완벽한 통제는 비싸고 자주 실패합니다. 현실적인 답은 "<b>믿되, 되돌리기 어려운 일만 막는다</b>"예요.</p>
-        </div>
-
-        <div class="story p-create">
-          <div class="who">창작자 — 실제 사례</div>
-          <p>유튜브 채널을 시작한 지인의 경우, AI가 <b>기획·리서치·대본 초안</b>은 마음껏 쓰도록 풀어놨어요. 하지만 <b>실제 업로드·계정 비밀번호</b>는 AI 손에 넘기지 않습니다.</p>
-          <p>또 하나 — 모든 기획 문서는 <b>비공개 저장소</b>에 두고, 바깥에 나가는 건 완성된 영상뿐. 이게 마당의 경계였어요: "생각은 AI와 함께, 세상에 나가는 발표는 사람이."</p>
-        </div>
-
-        <div class="do"><b>오늘 바로 해보기</b> — "AI가 잘못하면 내가 울 수 있는 일" 세 가지를 적고, 그중 하나를 "이건 사람이 직접 한다"로 분류해 설명서에 못박기.</div>
-      </article>
-
-      <!-- Card 3 -->
-      <article class="card">
-        <div class="num">카드 셋</div>
-        <h3>AI가 스스로 확인하게 만들어라</h3>
-        <div class="tl">사람이 매번 "제대로 했어?"라고 묻지 않아도, <b>결과가 바뀌면 자동으로 점검이 돌아가는</b> 구조를 만든다.</div>
-
-        <div class="block">
-          <div class="label">왜 중요한가</div>
-          <p>AI의 "다 됐어요"를 사람이 매번 다시 검사하면, 결국 내가 직접 하는 편이 빠릅니다. <b>점검을 구조에 박아두면</b>, AI는 그 구조 안에서 움직이기만 하면 돼요.</p>
-        </div>
-
-        <div class="story p-automate">
-          <div class="who">자동화 — 실제 사례</div>
-          <p>앞서 본 품질관리 보고서 자동화에서, AI에게는 "자기가 만든 결과를 자기가 검토"하는 단계가 있었습니다. AI는 "검토 완료, 이상 없음"이라고 리포트했죠.</p>
-          <p>그런데 <b>정답으로 삼아야 할 과거 보고서 파일과는 한 번도 비교한 적이 없었어요.</b> 검토는 자기 보고에 불과했습니다. 필요한 건 "AI가 결과를 낼 때마다 자동으로 과거 파일과 대조"하는 구조 한 줄이었어요.</p>
-        </div>
-
-        <div class="do"><b>오늘 바로 해보기</b> — 한 문장 적기: "AI가 ____를 하면, 자동으로 ____가 확인되면 좋겠다." 이 한 줄이 구조 설계의 시작입니다.</div>
-      </article>
-
-      <!-- Card 4 -->
-      <article class="card">
-        <div class="num">카드 넷</div>
-        <h3>설명서를 상황별로 쪼개라</h3>
-        <div class="tl">모든 규칙을 한 장에 다 쌓지 말고, <b>그 순간에 필요한 규칙만</b> 보이게 한다.</div>
-
-        <div class="block">
-          <div class="label">왜 중요한가</div>
-          <p>운전 중에 요리 매뉴얼을 읽히는 건 낭비이자 위험입니다. AI도 마찬가지예요. 주의력은 한정돼 있고, <b>지금 일과 무관한 규칙은 오히려 방해</b>가 됩니다.</p>
-        </div>
-
-        <div class="story p-automate">
-          <div class="who">자동화 — 실제 사례</div>
-          <p>품질관리 보고서는 의약품이 네 종류였습니다. 각기 표의 구성도, 시험 항목도, 단위 표기도 달랐어요. 처음엔 한 장 설명서에 다 몰아 적었는데 결과는 <b>규칙끼리 부딪쳐서</b> 엉망.</p>
-          <p>해결은 단순했습니다 — 의약품마다 설명서를 따로 두고, <b>해당 의약품 작업을 할 때만 그 설명서를 꺼내 쓰도록</b>. 혼선이 사라졌어요.</p>
-        </div>
-
-        <div class="do"><b>오늘 바로 해보기</b> — 지금 쓰는 설명서가 한 화면을 넘긴다면, 주제로 묶어 쪼갤 수 있는 덩어리 세 개를 찾아보기.</div>
-      </article>
-
-      <!-- Card 5 -->
-      <article class="card full">
-        <div class="num">카드 다섯</div>
-        <h3>흐릿하다면, 틀보다 결과물이 먼저다</h3>
-        <div class="tl">"뭘 만들지"가 흐릿한데 설명서부터 쓰는 건 <b>순서가 거꾸로</b>입니다. 엉성해도 좋으니 일단 한 번 만들어보세요.</div>
-
-        <div class="block">
-          <div class="label">왜 중요한가</div>
-          <p>오래된 속담 그대로입니다 — <b>재료가 나쁘면 요리도 나빠진다.</b> 기획 자체가 흐릿하면 아무리 좋은 틀도 좋은 결과를 주지 못해요. 흐릿함은 "대화"로 풀리지 않습니다. <b>결과물</b>로 풀려요. 한 번 만들어보면, 진짜 원했던 것이 선명해집니다.</p>
-        </div>
-
-        <div class="story p-create">
-          <div class="who">창작자 — 실제 사례</div>
-          <p>유튜브 채널 컨셉을 3주간 고민하던 분이 있었어요. "내 톤은 뭘까 / 어떤 포맷이 맞을까 / 어떻게 시작해야 정석일까"를 머릿속에서만 돌리는 중이었죠.</p>
-          <p>그러다 일단 AI에게 "10분짜리 대본 하나만 아무 주제로 써줘"를 시켜봤습니다. 받은 대본을 읽는 순간 이상한 일이 벌어졌어요 — <b>"아, 이건 내 톤이 아니구나"가 너무 선명하게 보였거든요.</b> 그 전까지 3주간 고민해도 안 떠오르던 것이, 결과물 한 번에 드러났습니다.</p>
-          <p>창작은 특히 <b>만들어야 알게 되는</b> 일입니다. 기획만으로는 기획조차 잘 안 돼요.</p>
-        </div>
-
-        <div class="ba">
-          <div class="ba-col before">
-            <h4>✗ 흔한 착각</h4>
-            <ul>
-              <li>"설명서부터 완벽하게 써야지"</li>
-              <li>"규칙부터 철저히 세워야지"</li>
-              <li>"구조부터 정교하게 짜야지"</li>
-              <li>→ 2주 뒤에도 아무것도 없음</li>
-            </ul>
-          </div>
-          <div class="ba-col after">
-            <h4>✓ 실제로 통하는 순서</h4>
-            <ul>
-              <li>일단 AI에게 아무렇게나 한 번 시켜본다</li>
-              <li>결과를 보고 "이건 아니지"가 떠오른다</li>
-              <li>그 발견을 설명서에 한 줄로 박는다</li>
-              <li>→ 설명서가 <b>실패에서 자란다</b></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="do"><b>오늘 바로 해보기</b> — 틀을 만들 생각은 잠시 덮어두고, 진짜 원하는 결과물 하나를 대충이라도 AI에게 맡겨보기. 불만이 생기면 그때부터 설명서 한 줄씩.</div>
-      </article>
-
-      <!-- Card 6 -->
-      <article class="card full">
-        <div class="num">카드 여섯</div>
-        <h3>조용한 실패를 믿지 마라</h3>
-        <div class="tl">AI가 "네, 다 했어요"라고 말하는 것과 <b>실제로 된 것</b>은 다른 사건입니다.</div>
-
-        <div class="block">
-          <div class="label">왜 중요한가</div>
-          <p>AI가 얽힌 작업에서 가장 무서운 사고는 요란한 오류 메시지가 아니라 <b>조용한 성공 착각</b>입니다. "됐다"는 신호가 "정말로 됐다"를 뜻하지 않으면, 그 신호는 거짓말이에요.</p>
-          <p>이 함정은 두 사람에게 각기 다른 얼굴로 왔습니다.</p>
-        </div>
-
-        <div class="episodes">
-
-          <div class="episode p-automate">
-            <div class="h">자동화 — 실제 사례</div>
-            <p>AI가 <b>자기가 만든 결과를 자기가 검토</b>해서 "이상 없음"이라 보고했습니다. 그런데 정답으로 삼아야 할 과거 보고서 파일과는 한 번도 비교한 적이 없었어요. 시험지 채점을 본인이 한 셈. 형식상 "합격"이 실제 "맞다"를 뜻하지 않았습니다.</p>
-          </div>
-
-          <div class="episode p-create">
-            <div class="h">창작자 — 실제 사례</div>
-            <p>유튜브 리서치 중, AI에게 "요즘 뜨는 포맷 정리해줘"를 시켰더니 그럴듯한 목록이 돌아왔습니다. 검증해보니 <b>이미 한물 간 유행</b>이 섞여 있었고, 심지어 <b>존재하지 않는 채널 이름</b>도 있었어요. 그 이후로는 <b>원본 영상 URL과 조회수까지 같이</b> 요구하게 됐습니다.</p>
-          </div>
-
-        </div>
-
-        <div class="block" style="margin-top: 18px">
-          <div class="label">그래서 어떻게</div>
-          <p>"했습니다" 대신 <b>"무엇을 확인했습니다"</b>를 만드세요. AI의 말이 아니라 <b>눈에 보이는 증거</b>를 결과로 남기게 하기.
-          출처 URL, 기준 날짜, 원본 파일과의 대조, 최소한 본인이 한 번 직접 확인하는 단계 — 어느 것이든 좋아요.</p>
-        </div>
-
-        <div class="do"><b>오늘 바로 해보기</b> — AI에게 일을 시킬 때, 다음 대화부터 "결과와 함께 <b>근거 하나</b>를 같이 보여줘"를 덧붙이기. 근거가 없으면 그 답은 일단 의심하기.</div>
-      </article>
-
+    <div class="speaker-notes">
+      <p><b>비유 사용</b>: "범용 AI는 카카오톡 친구. 사진 한두 장 보내면 봐주지만, 폴더를 통째로 보내달라곤 못 해요. 코딩용 AI는 같이 한 사무실에 앉은 인턴. 책상에 자료 한 무더기 올려두면 알아서 정리합니다."</p>
+      <p><b>오해 풀기</b>: "'코딩용'이라는 단어 때문에 거리감 느끼실 수 있는데, <b>여러분은 코드 한 줄도 안 쓰십니다</b>. AI한테 한국어로 부탁하기만 하면 돼요. 도구 이름이 그렇게 붙은 것뿐."</p>
+      <p><b>실제 시연 가능하면</b>: 강의장에서 Claude Code를 켜고 폴더 보여주기 → "이거 보세요, 폴더 안의 PDF들이 다 보이죠?" 한 번만 보여드려도 청중 이해도 크게 올라감.</p>
+      <p><b>설치 비용·진입장벽 질문 대비</b>: "유료지만 학원 한 명 강사 기준 월 3만 원대. 자료 정리 하루 줄이면 본전 뽑아요."</p>
     </div>
   </section>
 
-  <!-- Closing band -->
-  <section>
-    <div class="band">
-      <p class="quote">지금 이 틀을 이해하는 게 중요한 이유는,<br/>아직 AI가 <span class="accent">자기 틀을 스스로 만들지 못하기 때문</span>입니다.</p>
-      <p class="cite">그 사이의 시간 — 좋은 틀을 먼저 만든 사람이 AI를 가장 잘 씁니다.</p>
+  <!-- ─── SLIDE 4: AI Agent란? ─── -->
+  <section class="slide" data-title="AI Agent란">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 04 / 핵심 개념</div>
+      <span class="slide-tag">AI Agent</span>
+      <h2><span class="accent">AI Agent</span>가 뭔가요?</h2>
+      <p class="lead-muted">"Agent"는 영어로 "대리인". <b>스스로 도구를 골라 쓰고, 결과를 확인하고, 부족하면 다시 시도하는 AI</b>를 말합니다. 범용 AI와 가장 큰 차이가 여기에 있어요.</p>
+
+      <div class="compare">
+        <div class="col dim">
+          <h3>범용 AI는 — "한 번에 답"</h3>
+          <div class="sub">물어보면 답한다. 그게 끝.</div>
+          <ul>
+            <li>질문 한 번 → 답 한 번</li>
+            <li>틀려도 자기가 모름 (확인할 수단 없음)</li>
+            <li>중간에 멈춰 검증 못 함</li>
+          </ul>
+        </div>
+        <div class="col bright">
+          <h3>Agent는 — "임무를 끝까지"</h3>
+          <div class="sub">임무 받으면 스스로 굴러간다.</div>
+          <ul>
+            <li>임무 받음 → 계획 짬 → 도구 골라 씀</li>
+            <li>결과 확인 → 부족하면 다시</li>
+            <li>마지막에 "끝났습니다" 보고</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="agent-flow">
+        <h3 style="margin-bottom: 16px; text-align: center; color: var(--muted); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">Agent의 일하는 방식</h3>
+        <div class="flow-row">
+          <span class="flow-step start">임무 받기</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">계획 세우기</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">도구 선택</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step loop">실행</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step loop">결과 확인</span>
+          <span class="flow-arrow">↻</span>
+          <span class="flow-step loop">부족하면 다시</span>
+        </div>
+        <div class="flow-row">
+          <span class="flow-arrow">→</span>
+          <span class="flow-step end">완료 보고</span>
+        </div>
+      </div>
+
+      <div class="tip">
+        <b><span class="icon">✓</span>왜 이게 중요한가</b>
+        Agent는 <b>중간에 멈춰서 검증</b>을 할 수 있습니다. "변환한 텍스트에서 어색한 부분 다시 봐줘"라고 하면, Agent는 자기 결과물을 다시 읽고 수정합니다. <b>범용 AI는 못 하는 일</b>이에요.
+      </div>
+
+      <p style="margin-top: 18px; font-size: 14px; color: var(--muted); text-align: right;">
+        🔬 "왜 범용 AI는 못 하고 Agent는 가능한가" — 모델·메모리·하니스 구조까지 깊이 들어가는 별도 페이지:
+        <a href="advanced/why-agents.html" style="color: var(--accent);">→ AI 구조 들여다보기 (advanced)</a>
+      </p>
+    </div>
+    <div class="speaker-notes">
+      <p><b>"왜 범용은 못 하고 Agent는 가능한가"</b>를 깊이 묻는 청중을 위한 보조 페이지: <a href="advanced/why-agents.html">advanced/why-agents.html</a>. 강의 중엔 슬쩍 언급만, "끝나고 사이트에서 보세요"로 보내기.</p>
+      <p><b>비유 활용</b>: "심부름 시킨다고 생각해보세요. 카톡으로 '편의점에서 사이다 사다 줘'라고 하면 카톡 친구는 답만 하지 실제로 못 가요. Agent는 진짜 편의점 가서, 사이다가 없으면 콜라로 대체할지 다시 물어보고, 영수증까지 가져옵니다."</p>
+      <p><b>주의할 점 함께 말하기</b>: "물론 Agent도 완벽하지 않아요. 가끔 엉뚱한 도구를 쓰거나 너무 자신만만하게 끝났다고 보고합니다. 그래서 <b>마지막 검수는 사람이</b>. 단, 검수만 하면 되는 거지, 처음부터 다 만들 필요는 없어요."</p>
+      <p><b>실제 시연 아이디어</b>: "이 폴더의 PDF 전부 텍스트로 바꾸고, 학교별로 분류해서 표로 만들어줘" 한 줄로 시연. 청중이 "오..." 하는 순간이 보통 여기.</p>
+      <p><b>전환 한 줄</b>: "그래서 코딩용 AI를 쓰면 <b>구체적으로 뭘 더 컨트롤할 수 있냐</b>, 이게 다음 슬라이드입니다."</p>
     </div>
   </section>
 
-  <footer>
-    <div>© how-to-claude · 비개발자 트랙</div>
-    <div>
-      <a href="#cases">참고 사례</a> ·
-      <a href="#cards">카드 목록</a> ·
-      <a href="deeper.html">더 깊이</a> ·
-      <a href="mac.html">Mac</a> ·
-      <a href="samsung.html">Samsung</a> ·
-      <a href="asus.html">ASUS</a>
+  <!-- ─── SLIDE 5: 코딩용 AI로 얻는 컨트롤 ─── -->
+  <section class="slide" data-title="얻는 것 5가지">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 05 / 가치</div>
+      <span class="slide-tag">컨트롤과 정확도</span>
+      <h2>코딩용 AI를 쓰면 <span class="accent">이것을 얻습니다</span></h2>
+      <p class="lead-muted">앞에서 본 세 가지 고충(거짓말·일관성 없음·자료 못 봄)이 아래 다섯 가지 컨트롤로 해결됩니다.</p>
+
+      <div class="points">
+        <div class="point">
+          <div class="n">①</div>
+          <div class="body">
+            <h3>자료를 통째로 넘긴다 — "캡쳐는 그만"</h3>
+            <p>수십·수백 부 PDF를 한 폴더에 모아두면, "이 폴더 다 읽어줘" 한 줄이면 끝. 클릭이 사라집니다.</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="n">②</div>
+          <div class="body">
+            <h3>결과가 실제 파일로 떨어진다</h3>
+            <p>채팅창에서 복사·붙여넣기 → 워드 정리하는 과정이 없어집니다. AI가 직접 워드/엑셀/PDF를 만들어 폴더에 둡니다.</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="n">③</div>
+          <div class="body">
+            <h3>검증을 같이 시킨다 — "출처 적어줘"</h3>
+            <p>"답마다 출처 URL 표기, 확실치 않으면 '미확인' 표시." 이 한 줄로 거짓말의 90%가 사라집니다.</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="n">④</div>
+          <div class="body">
+            <h3>반복이 진짜 반복된다</h3>
+            <p>"이전 문제집과 동일한 양식"이라고만 말하면 그대로 따라합니다. 양식이 흔들리지 않아요.</p>
+          </div>
+        </div>
+        <div class="point">
+          <div class="n">⑤</div>
+          <div class="body">
+            <h3>단계마다 멈춰서 확인할 수 있다</h3>
+            <p>"바로 만들지 말고 계획만 먼저" → 동의하면 진행. 엉뚱한 방향으로 30분 굴러가는 사고가 없어집니다.</p>
+          </div>
+        </div>
+      </div>
     </div>
-  </footer>
+    <div class="speaker-notes">
+      <p><b>핵심 한 줄로 묶기</b>: "5가지를 한 마디로 줄이면 — <b>'AI에게 일을 맡기되, 컨트롤은 내가 갖는다'</b>입니다."</p>
+      <p><b>각 항목에 짧은 실사례 곁들이기</b>:
+      <ul>
+        <li>①: "10년치 시험지가 사진으로 있다는 선생님 사례 — 캡쳐만 100시간." (실제로 비슷한 케이스 자주 있음)</li>
+        <li>②: "ChatGPT에서 결과 복사해서 워드 옮기다 양식 깨진 경험" — 손 들어보게.</li>
+        <li>③: "출처 한 줄 부탁이 환각의 절반을 해결합니다."</li>
+        <li>④: "AI한테 '예시 양식 한 장' 보여주면 매번 그걸 따라합니다. 설명 열 줄보다 강함."</li>
+        <li>⑤: "1시간 일을 의도와 다르게 끝마쳐버린 경험 → 계획 합의가 그걸 막아줍니다."</li>
+      </ul></p>
+      <p><b>전환</b>: "이제 진짜 예제로 들어갈게요. 오늘 청중분들이 가지고 계신 상황을 가져왔습니다."</p>
+    </div>
+  </section>
+
+  <!-- ─── SLIDE 6: 오늘의 예제 ─── -->
+  <section class="slide" data-title="오늘의 예제">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 06 / 실전 예제</div>
+      <span class="slide-tag">예제 소개</span>
+      <h2>오늘의 예제 — <span class="accent">국어 예상문제 만들기</span></h2>
+      <p class="lead-muted">중학교 국어 강사의 실제 상황을 가져왔습니다. 이 한 가지를 갖고 5단계를 끝까지 같이 해볼게요.</p>
+
+      <div class="card">
+        <h3>상황</h3>
+        <p>A·B·C 중학교 학생이 학원에 다닙니다. 각 학교는 다른 출판사 교과서를 씁니다. A 학교 시험에는 시 "가·나·다", B 학교는 "다·라·마"가 묶여 나왔어요. <b>C 학교 학생은 교과서에 "다"가 있으니, "가·나·라·마"와 묶일 가능성</b>이 있습니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>목표</h3>
+        <p>A·B 학교의 최근 시험지를 참고해서, <b>C 학교 학생용 예상 문제집</b>을 만들고 싶다. 시 단원 10문항(객관식 7 + 서술형 3), 정답·해설 포함, 워드 한 부.</p>
+      </div>
+
+      <div class="card">
+        <h3>가진 자료</h3>
+        <ul>
+          <li>A·B·C 학교 최근 3년치 국어 시험지 (PDF·사진, 수십~수백 부)</li>
+          <li>각 학교가 쓰는 교과서·자습서</li>
+          <li>지금까지 만든 자체 문제집 (양식 참고용)</li>
+        </ul>
+      </div>
+
+      <div class="warn">
+        <b>난점</b>:
+        ① 자료가 다 사진·PDF — 텍스트로 변환부터 필요<br/>
+        ② 시 작품의 주제·표현기법별 분류가 없음 — "비슷한 시"를 어떻게 찾을지 기준이 흐릿<br/>
+        ③ AI가 정답을 잘못 만들 수 있음 — 검증 단계 필요<br/>
+        ④ 저작권 — 외부 배포는 안 되니 학원 내부용으로만
+      </div>
+
+      <p class="lead" style="margin-top: 22px;">→ 이걸 다음 5단계로 풀어봅니다.</p>
+    </div>
+    <div class="speaker-notes">
+      <p><b>청중 환기</b>: "이게 정확히 본인 일이 아니어도 괜찮습니다. 본인이 가진 일에 그대로 적용할 수 있도록, 단계마다 '본인 일에 바꿔 쓸 부분'을 같이 짚어드릴게요."</p>
+      <p><b>예제를 고른 이유 말하기</b>: "이 청중에게 가장 가까운 일이라서요. AI 도구 강의는 보통 IT 예제로 하는데, 그러면 거리감만 커집니다."</p>
+      <p><b>다음 슬라이드 전환</b>: "1단계부터 시작합니다. 가장 중요하지만, 가장 자주 빠뜨리는 단계예요."</p>
+    </div>
+  </section>
+
+  <!-- ─── SLIDE 7: STEP 1 - 결과물 그리기 ─── -->
+  <section class="slide" data-title="Step 1 · 결과물 그리기">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 07 / STEP 1</div>
+      <span class="slide-tag">5단계 중 첫 번째</span>
+      <h2>먼저, <span class="accent">무엇이 끝났을 때 '성공'</span>인가요?</h2>
+      <p class="lead-muted">도구를 켜기 전에, 끝났을 때 어떤 모습이어야 하는지 그림으로 그려두세요. 이 그림이 흐릿하면 AI 결과물도 흐릿합니다.</p>
+
+      <div class="ba">
+        <div class="ba-col before">
+          <h4>흐릿한 부탁</h4>
+          <p>"국어 예상 문제 좀 만들어줘"</p>
+          <p style="color: var(--muted); font-size: 13.5px;">→ 분량도 형식도 난이도도 제멋대로. 결국 처음부터 다시 손봐야 합니다.</p>
+        </div>
+        <div class="ba-col after">
+          <h4>또렷한 부탁</h4>
+          <p>"C중학교 2학년 2학기 중간고사용. 시 단원. 객관식 7 + 서술형 3. 정답·해설 포함. 워드 한 장 분량."</p>
+          <p style="color: var(--muted); font-size: 13.5px;">→ AI가 무엇을 어디에 맞춰야 하는지 알게 됩니다.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>'성공의 그림'을 그릴 때 떠올릴 6가지</h3>
+        <ul>
+          <li><b>누가 볼까?</b> — 학생용, 선생님 검수용, 학부모 안내용</li>
+          <li><b>몇 개?</b> — 문항 수, 분량 (A4 1장? 5장?)</li>
+          <li><b>어떤 형태?</b> — 객관식/서술형, 워드/엑셀/PDF, 정답·해설 포함</li>
+          <li><b>난이도</b> — 중1, 내신 평균, 심화</li>
+          <li><b>지켜야 할 형식</b> — 우리 학원 양식, 폰트, 머리글</li>
+          <li><b>건드리면 안 되는 것</b> — 원작 시 인용 분량, 출처 표기 의무</li>
+        </ul>
+        <div class="tip">
+          <b><span class="icon">✓</span>실전 팁</b>
+          이 6가지를 한 번 적어두면 그 다음부터 새 부탁마다 그대로 갖다 쓸 수 있어요. 한 번만 고생하면 됩니다.
+        </div>
+      </div>
+    </div>
+    <div class="speaker-notes">
+      <p><b>실습 유도</b>: "여기서 30초만 — 본인이 AI에게 시키고 싶은 일 하나를, 이 6가지로 적어보세요. 다 못 적어도 됩니다. 머릿속에서 떠올려보기만 해도 충분."</p>
+      <p><b>핵심 비유</b>: "신입 조교한테 일 맡길 때 어떻게 설명하실지 떠올려보세요. '국어 문제 좀 만들어' 하시진 않잖아요? AI도 똑같습니다."</p>
+    </div>
+  </section>
+
+  <!-- ─── SLIDE 8: STEP 2 - 문제 정의 ─── -->
+  <section class="slide" data-title="Step 2 · 문제 정의">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 08 / STEP 2</div>
+      <span class="slide-tag">5단계 중 두 번째</span>
+      <h2>문제를 어떻게 <span class="accent">'말'</span>해줘야 할까</h2>
+      <p class="lead-muted">단순 명령("X 해줘")만 던지면 AI는 맥락을 모릅니다. 신입 조교에게 일을 맡기듯, <b>나는 누구이고 / 무엇을 가졌고 / 왜 이게 필요한지</b>를 함께 말해주세요.</p>
+
+      <div class="template">
+        <b>부탁 템플릿 (그대로 복사해서 채우세요)</b><br/><br/>
+        <span class="tag">나는</span> 중학교 국어 강사입니다. 학원에서 내신 대비 자료를 만듭니다.<br/>
+        <span class="tag">가진 자료</span> A·B·C 중학교 최근 3년치 국어 시험지(PDF, 약 ○○부)와 출판사 ○○ 자습서가 있습니다.<br/>
+        <span class="tag">하고 싶은 일</span> C 중학교 학생용 예상 문제집. 같은 주제·표현기법의 다른 학교 시들을 묶어 문제 출제.<br/>
+        <span class="tag">원하는 결과물</span> 워드 파일 한 부. 객관식 7 + 서술형 3 + 정답 + 해설.<br/>
+        <span class="tag">제약</span> 시 본문은 출처(작가·제목) 반드시 표기. 외부 배포 금지. 학원 내부용으로만 사용.
+      </div>
+
+      <div class="card">
+        <h3>왜 이 다섯 가지가 다 필요할까?</h3>
+        <ul>
+          <li><b>"나는"</b> — AI는 톤을 조절합니다. 학생 대상인지, 동료 선생님 대상인지에 따라 말투가 달라져요.</li>
+          <li><b>"가진 자료"</b> — 무엇을 참고하고, 무엇을 새로 만들지 AI가 판단합니다.</li>
+          <li><b>"하고 싶은 일"</b> — '왜'를 알면 AI가 빠진 단계를 먼저 짚어줍니다.</li>
+          <li><b>"원하는 결과물"</b> — Step 1에서 그려둔 그림. 형식 일치.</li>
+          <li><b>"제약"</b> — 가장 자주 빠지는 부분. 저작권·분량·금기어가 여기.</li>
+        </ul>
+      </div>
+
+      <div class="warn">
+        <b>자주 하는 실수</b>: 한 번에 많이 말하면 답답하다고 느끼시는데, 사실 AI는 <b>길어도 정리된 글</b>을 더 잘 다룹니다. 두 줄짜리 모호한 지시보다, 열 줄짜리 또렷한 부탁이 결과가 훨씬 좋습니다.
+      </div>
+    </div>
+    <div class="speaker-notes">
+      <p><b>이 슬라이드는 '강의 자료 PDF'로 따로 출력해서 나눠드리기 권장</b>. 청중이 본인 일로 채우는 워크시트로 활용 가능.</p>
+      <p><b>실습 시간</b>: 3~5분 정도 자기 일로 직접 채워보게 하기. 한두 분 발표 권유.</p>
+    </div>
+  </section>
+
+  <!-- ─── SLIDE 9: STEP 3 - 계획 회의 ─── -->
+  <section class="slide" data-title="Step 3 · 계획 회의">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 09 / STEP 3</div>
+      <span class="slide-tag">5단계 중 세 번째</span>
+      <h2>일을 시키기 전에, <span class="accent">'계획 회의'</span>부터</h2>
+      <p class="lead-muted">큰 일을 한 번에 던지면 AI는 자기 식으로 끝까지 만들어버립니다. 실행 전에 <b>계획만 먼저 합의</b>하면 엉뚱한 방향이 차단됩니다.</p>
+
+      <div class="card">
+        <h3>이렇게 부탁하면 됩니다</h3>
+        <p style="background: var(--panel-2); padding: 14px 16px; border-radius: 8px; border-left: 3px solid var(--accent); font-size: 14.5px; margin-top: 8px;">
+          "이걸 하려고 합니다. (Step 2에서 정리한 부탁 붙여넣기)<br/>
+          <b>바로 만들지 말고</b>, 어떤 단계로 진행하면 좋을지 먼저 계획을 짜주세요.<br/>
+          제가 검토하고 동의하면 그때 진행하겠습니다."
+        </p>
+        <p style="margin-top: 14px;">AI가 짠 계획을 보면 보통 이런 게 보입니다:</p>
+        <ul>
+          <li>"아 이 단계는 빠뜨렸네" — 검증 단계가 없거나, 정답 확인 안 함</li>
+          <li>"이건 내가 한 번 해보고 싶었는데" — 자료 정리 방식을 AI가 결정해버림</li>
+          <li>"순서가 거꾸로네" — 시 분류부터 해야 하는데 문제부터 만들려고 함</li>
+        </ul>
+        <p style="margin-top: 10px;">이걸 짚어서 "여기 이렇게 바꿔주세요"라고 하면, 그 다음 실행은 훨씬 깔끔합니다.</p>
+      </div>
+
+      <div class="tip">
+        <b><span class="icon">✓</span>한 줄로 외우기</b>
+        <b>"바로 만들지 마세요. 계획만 먼저."</b> — 이 한 줄이 결과물의 절반을 결정합니다.
+      </div>
+    </div>
+    <div class="speaker-notes">
+      <p><b>강조 포인트</b>: "이게 오늘 강의에서 단 하나만 가져가신다면 가장 가치 있는 한 줄입니다. <b>'계획만 먼저'</b>. 다른 거 다 잊으셔도 이거 하나만 기억하셔도 일이 달라져요."</p>
+      <p><b>실 사례 곁들이기</b>: 본인 경험 중 "계획 안 받고 시켰다가 한 시간 날린 일" 한 가지를 짧게.</p>
+    </div>
+  </section>
+
+  <!-- ─── SLIDE 10: STEP 4 - 자료 넘기기 ─── -->
+  <section class="slide" data-title="Step 4 · 자료 넘기기">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 10 / STEP 4</div>
+      <span class="slide-tag">5단계 중 네 번째</span>
+      <h2>수십 년치 자료, <span class="accent">캡쳐 한 장씩은 그만</span></h2>
+      <p class="lead-muted">자료가 PDF·사진으로 수십·수백 부 있을 때, 한 장씩 채팅창에 올리면 하루가 다 갑니다. <b>폴더째로 한 번에 넘기는 방법</b>이 있어요.</p>
+
+      <div class="card">
+        <h3>자료 폴더 정리하는 법 (가장 중요한 단계)</h3>
+        <p>도구가 똑똑해도, 파일 이름이 <code style="background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 4px;">scan_001.pdf</code> 같으면 무엇이 무엇인지 모릅니다. <b>이름 규칙</b>만 정해두면 AI가 알아서 분류합니다.</p>
+
+        <div class="tree">시험자료/
+├── <span class="a">A중학교/</span>
+│   ├── A중_2023_1학기중간_국어.pdf
+│   ├── A중_2023_1학기기말_국어.pdf
+│   ├── A중_2024_1학기중간_국어.pdf
+│   └── ...
+├── <span class="a">B중학교/</span>
+│   ├── B중_2023_1학기중간_국어.pdf
+│   └── ...
+├── <span class="a">교과서/</span>
+│   ├── 미래엔_중2국어_상.pdf
+│   └── 천재교육_중2국어_상.pdf
+└── <span class="a">자습서/</span>
+    └── ...
+<span class="c"># (학교)_(연도)_(시험)_(과목) 순서만 지키면
+# AI가 "A중 2024년 중간만 모아줘" 같은 일을 알아서 합니다.</span></div>
+
+        <div class="tip">
+          <b><span class="icon">✓</span>한 번에 넘기는 한 줄</b>
+          도구를 폴더에 띄워두고: <b>"이 폴더 안의 PDF를 전부 텍스트로 변환해서, 학교별·연도별로 분류해서 표로 정리해줘."</b> — 그 다음 차 한 잔 드시면 됩니다.
+        </div>
+      </div>
+
+      <div class="warn">
+        <b>저작권 메모</b>: 교과서·자습서·시험지 본문 텍스트화는 <b>학원 내부용·비공개 보관</b>까지만. 외부 배포(블로그·SNS·다른 학원과 공유)는 작가/출판사 저작권에 걸릴 수 있으니, 결과물엔 항상 <b>작가·제목·출처</b>를 표기하고 외부 공유는 피하세요.
+      </div>
+    </div>
+    <div class="speaker-notes">
+      <p><b>여기가 'AI Agent의 진짜 차이'가 가장 잘 드러나는 슬라이드</b>. 청중이 그동안 캡쳐로 고생한 게 한 번에 풀리는 순간.</p>
+      <p><b>주의</b>: "도구 깔고 폴더 가리키는 법"은 강의 후반의 라이브 시연 또는 별도 영상으로 안내. 슬라이드에는 개념만.</p>
+      <p><b>저작권 한 줄 강조</b>: "여러분 학원 내부에서 풀이용으로 쓰는 건 통상 허용. 단 결과물을 블로그·인스타에 올리시면 그건 다른 문제예요."</p>
+    </div>
+  </section>
+
+  <!-- ─── SLIDE 11: STEP 5 - 검색 시키기 ─── -->
+  <section class="slide" data-title="Step 5 · 검색 시키기">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 11 / STEP 5</div>
+      <span class="slide-tag">5단계 중 다섯 번째</span>
+      <h2>모르는 건 <span class="accent">AI한테 검색</span>을 시키세요</h2>
+      <p class="lead-muted">"○○ 시가 어느 출판사 교과서에 실렸지?" "이 작가의 다른 시 중에 비슷한 주제 있나?" — 직접 검색하지 말고 AI한테 시키세요. 단, 잘 시키는 법이 있습니다.</p>
+
+      <div class="ba">
+        <div class="ba-col before">
+          <h4>두루뭉술한 검색 부탁</h4>
+          <p class="quote">윤동주 시 알려줘</p>
+          <p style="color: var(--muted); font-size: 13.5px;">→ 유명한 것 위주로 대충 나열. 출처도 불분명. 진짜인지 확인 불가.</p>
+        </div>
+        <div class="ba-col after">
+          <h4>또렷한 검색 부탁</h4>
+          <p class="quote">"별 헤는 밤"과 주제·정서가 비슷한 한국 현대시 5개를 찾아줘. 작가·제목·발표연도·주요 주제·출처(URL)를 표로 정리해줘.</p>
+          <p style="color: var(--muted); font-size: 13.5px;">→ 검증 가능한 결과물. 출처 안 적힌 건 의심.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>AI 검색에서 꼭 같이 부탁할 것</h3>
+        <ul>
+          <li><b>출처(URL)를 같이 적어줘</b> — 출처 없으면 AI가 만들어낸 답일 수 있습니다 ('환각')</li>
+          <li><b>몇 개 찾았는지 숫자로</b> — "여러 개"보다 "5개"가 검증하기 쉬워요</li>
+          <li><b>표로 정리해줘</b> — 한 줄 글보다 빠르게 훑을 수 있어요</li>
+          <li><b>모르면 모른다고 해줘</b> — "확실치 않으면 추측 말고 '모르겠음' 표시"</li>
+        </ul>
+        <div class="tip">
+          <b><span class="icon">✓</span>실전 한 줄</b>
+          검색 부탁 끝에 항상 붙이세요: <b>"답마다 출처 URL 표기, 확실치 않으면 '미확인'으로 둘 것."</b>
+        </div>
+      </div>
+
+      <div class="warn">
+        <b>주의 — AI도 가끔 거짓말합니다 (환각)</b>: 특히 인용·통계·옛 자료에서 그럴듯한 가짜를 내놓곤 합니다. 학생에게 나갈 자료는 출처 한 번 더 확인이 안전. 위의 "출처 URL 표기" 한 줄이 이걸 방지해줘요.
+      </div>
+    </div>
+    <div class="speaker-notes">
+      <p><b>슬라이드 2에서 말한 "거짓말 문제"가 여기서 풀린다</b>는 걸 명시. 청중이 회로로 연결되는 순간.</p>
+      <p><b>실습</b>: 본인이 평소 검색하던 질문 하나를 이 방식으로 다시 써보게. "출처 URL 한 줄 추가"의 위력 체감.</p>
+    </div>
+  </section>
+
+  <!-- ─── SLIDE 12: 막혔을 때 ─── -->
+  <section class="slide" data-title="막혔을 때">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 12 / 트러블슈팅</div>
+      <span class="slide-tag">막혔을 때</span>
+      <h2>AI가 <span class="accent">엉뚱한 답</span>을 줄 때</h2>
+      <p class="lead-muted">5단계를 다 해도 가끔 막힙니다. 그럴 때 쓸 수 있는 세 가지 처방.</p>
+
+      <div class="card">
+        <h3>증상 1 — 결과가 점점 산으로 갑니다</h3>
+        <p>대화가 길어지면 AI가 앞에 한 약속을 잊어버려요. 이럴 땐 새 대화를 시작하고, <b>Step 2의 부탁 템플릿을 다시 붙여넣으세요</b>. 길어진 한 대화보다, 짧고 또렷한 새 대화가 결과가 좋습니다.</p>
+      </div>
+
+      <div class="card">
+        <h3>증상 2 — "안 된다"고만 합니다</h3>
+        <p>AI가 거절할 땐 보통 두 가지 중 하나:
+        <br/>① 정말 못 하는 일 (예: 인터넷 결제) — 다른 방법을 같이 찾자고 부탁<br/>
+        ② 맥락이 모자라 자신이 없는 것 — Step 2 부탁 템플릿을 더 채워 다시 시도</p>
+      </div>
+
+      <div class="card">
+        <h3>증상 3 — 형식이 매번 달라집니다</h3>
+        <p>"매번 이 양식대로 해줘"라고 한 번 약속하고, 그 양식 <b>예시 한 장</b>을 보여주세요. 예시 한 장이 설명 열 줄보다 강합니다.</p>
+      </div>
+    </div>
+    <div class="speaker-notes">
+      <p><b>안심시키기</b>: "막히는 건 정상이에요. 여러분 잘못이 아니라 AI도 사람과 비슷한 한계가 있어요. 위 세 가지 패턴만 기억하시면 대부분 풀립니다."</p>
+      <p><b>Q&A 유도</b>: "지금까지 들으시면서 본인 상황에서 막힐 것 같은 부분 있으시면, 지금이 질문 타이밍이에요."</p>
+    </div>
+  </section>
+
+  <!-- ─── SLIDE 13: 다음 단계 ─── -->
+  <section class="slide" data-title="다음 단계">
+    <div class="slide-inner">
+      <div class="slide-num">SLIDE 13 / 마무리</div>
+      <span class="slide-tag">다음 단계</span>
+      <h2>오늘 가져가실 <span class="accent">한 줄</span></h2>
+
+      <div class="quote-band">
+        <p class="q">"AI에게 잘 부탁한다는 건,<br/><span class="accent">신입 조교에게 잘 설명한다</span>는 것."</p>
+        <p class="cite">— 결과물 그리기 → 문제 정의 → 계획 합의 → 자료 통째로 → 검색에 출처 부탁</p>
+      </div>
+
+      <div class="cta-grid">
+        <a class="cta" href="reference.html">
+          <div class="label">참고자료</div>
+          <div class="title">국어 예상문제 만들기 — 자료 모음</div>
+          <div class="desc">교과서 조회처, 기존 서비스, 한글 PDF 처리 도구, 저작권 가이드.</div>
+        </a>
+        <a class="cta" href="advanced/index.html">
+          <div class="label">중급자용</div>
+          <div class="title">AI에게 일을 맡길 때, '틀'이 결과를 바꾼다</div>
+          <div class="desc">Claude Code의 구조(LLM·도구·틀)와 사용자 사례. 한 단계 더 깊이.</div>
+        </a>
+      </div>
+
+      <div class="tip" style="margin-top: 32px;">
+        <b><span class="icon">✓</span>오늘 마치며</b>
+        실습 한 가지만 정해 가세요. "내일 출근해서 ○○를 AI한테 부탁해본다." 그 한 번이 시작입니다. 막히면 이 사이트 주소 적어두고 다시 보세요.
+      </div>
+    </div>
+    <div class="speaker-notes">
+      <p><b>마무리 멘트</b>: "오늘 알려드린 5단계는 외울 게 아니라, <b>막힐 때마다 다시 보는 체크리스트</b>입니다. 사이트 주소 적어두시고, 본인 일에 한 번이라도 적용해보세요. 그 한 번이 가장 어렵습니다."</p>
+      <p><b>Q&A 안내</b>: 마지막 5~10분 Q&A 시간. 청중 중에 본인 일로 막혔던 사례 가져온 분이 있으면 그 자리에서 5단계로 풀어보기.</p>
+      <p><b>피드백 요청</b>: 강의 후 어떻게 적용했는지 한 줄 회신 요청 — 다음 강의 개선에 사용.</p>
+    </div>
+  </section>
 
 </div>
+
+<!-- ─── Speaker Notes Panel ─── -->
+<div class="notes-panel" id="notes-panel">
+  <div class="label">📝 강사 노트 — 슬라이드 <span id="notes-slide-num">1</span></div>
+  <div class="content" id="notes-content"></div>
+</div>
+
+<!-- ─── Controls ─── -->
+<div class="controls">
+  <button id="prev-btn" aria-label="이전 슬라이드">← 이전</button>
+  <span class="counter"><span id="cur-num">1</span> / <span id="total-num">13</span></span>
+  <button id="next-btn" aria-label="다음 슬라이드">다음 →</button>
+  <div class="title-mini" id="cur-title">강의 목적</div>
+  <div class="progress"><div class="bar" id="progress-bar"></div></div>
+  <button id="notes-btn" aria-label="강사 노트 토글">📝 노트 (N)</button>
+  <span class="hint">← → · N</span>
+</div>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const totalEl = document.getElementById('total-num');
+  const curNumEl = document.getElementById('cur-num');
+  const curTitleEl = document.getElementById('cur-title');
+  const progressBar = document.getElementById('progress-bar');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const notesBtn = document.getElementById('notes-btn');
+  const notesPanel = document.getElementById('notes-panel');
+  const notesContent = document.getElementById('notes-content');
+  const notesSlideNum = document.getElementById('notes-slide-num');
+
+  totalEl.textContent = total;
+  let current = 0;
+
+  // Parse current slide from URL hash if present
+  function getInitial() {
+    const h = window.location.hash.replace('#', '');
+    const n = parseInt(h, 10);
+    if (!isNaN(n) && n >= 1 && n <= total) return n - 1;
+    return 0;
+  }
+
+  function render(){
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    curNumEl.textContent = current + 1;
+    notesSlideNum.textContent = current + 1;
+    curTitleEl.textContent = slides[current].dataset.title || '';
+    progressBar.style.width = ((current + 1) / total * 100) + '%';
+    prevBtn.disabled = (current === 0);
+    nextBtn.disabled = (current === total - 1);
+
+    // Load notes for this slide
+    const notesEl = slides[current].querySelector('.speaker-notes');
+    notesContent.innerHTML = notesEl ? notesEl.innerHTML : '<p style="color: var(--muted);">이 슬라이드엔 노트가 없습니다.</p>';
+
+    // Update URL hash without scrolling
+    history.replaceState(null, '', '#' + (current + 1));
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function go(n){
+    if (n < 0 || n >= total) return;
+    current = n;
+    render();
+  }
+
+  prevBtn.addEventListener('click', () => go(current - 1));
+  nextBtn.addEventListener('click', () => go(current + 1));
+
+  notesBtn.addEventListener('click', () => {
+    notesPanel.classList.toggle('open');
+    notesBtn.classList.toggle('active');
+  });
+
+  document.addEventListener('keydown', (e) => {
+    // Ignore if user typing in input
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault();
+      go(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      go(current - 1);
+    } else if (e.key === 'n' || e.key === 'N') {
+      notesBtn.click();
+    } else if (e.key === 'Home') {
+      go(0);
+    } else if (e.key === 'End') {
+      go(total - 1);
+    }
+  });
+
+  // Click on the right/left edge of slide area to navigate (mobile-friendly)
+  // — only when click target is the slide background, not a link/button
+  document.getElementById('deck').addEventListener('click', (e) => {
+    if (e.target.closest('a, button, .card, .cta, .col, .ba-col, .template, .tip, .warn, .quote-band, .agent-flow, .speaker-card, .agenda, .point, .tree, .controls, .notes-panel')) return;
+    const x = e.clientX;
+    const w = window.innerWidth;
+    if (x > w * 0.7) go(current + 1);
+    else if (x < w * 0.3) go(current - 1);
+  });
+
+  // Initialize
+  current = getInitial();
+  render();
+})();
+</script>
+
 </body>
 </html>

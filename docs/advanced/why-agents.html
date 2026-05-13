@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>왜 Agent만 '다시 시도'를 할 수 있나 — AI의 구조 · how-to-claude</title>
+<meta name="description" content="범용 AI 도구는 못 하고 Agent는 할 수 있는 것의 진짜 이유. 모델·메모리·프롬프트·도구·하니스의 5가지 구성요소 해부." />
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --panel-2: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --muted: #9a9a9a;
+    --accent: #ff7a1a;
+    --accent-dim: rgba(255,122,26,0.18);
+    --green: #3ecf8e;
+    --red: #ff5c5c;
+    --blue: #5aa2ff;
+    --purple: #b985ff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                 "Pretendard", "Noto Sans KR", sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, .mono {
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 0.92em;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 64px 24px 120px; }
+
+  .breadcrumb {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    letter-spacing: 0.02em;
+  }
+  .breadcrumb a { color: var(--muted); }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .sep { margin: 0 8px; }
+
+  .hero { margin-bottom: 48px; }
+  .tagline {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    border-radius: 999px;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+  h1 {
+    font-size: 36px;
+    line-height: 1.25;
+    margin: 0 0 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  h1 .accent { color: var(--accent); }
+  .lead {
+    font-size: 18px;
+    color: var(--text);
+    margin: 0 0 12px;
+    line-height: 1.7;
+  }
+  .lead-muted {
+    color: var(--muted);
+    font-size: 15.5px;
+    margin: 0;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 48px;
+  }
+  .toc h3 {
+    margin: 0 0 10px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .toc ol { margin: 0; padding-left: 22px; }
+  .toc ol li { margin-bottom: 4px; font-size: 14.5px; }
+  .toc ol li a { color: var(--text); }
+  .toc ol li a:hover { color: var(--accent); text-decoration: none; }
+
+  /* Section */
+  section { margin-bottom: 56px; }
+  section:target { animation: highlight 0.6s; }
+  @keyframes highlight {
+    0% { background: rgba(255,122,26,0.06); }
+    100% { background: transparent; }
+  }
+  h2 {
+    font-size: 24px;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  h2 .num {
+    color: var(--accent);
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 14px;
+    margin-right: 10px;
+    letter-spacing: 0.1em;
+  }
+  h3 {
+    font-size: 17px;
+    margin: 22px 0 8px;
+  }
+  p { margin: 0 0 14px; }
+  ul, ol { margin: 8px 0 14px; padding-left: 22px; }
+  ul li, ol li { margin-bottom: 6px; }
+
+  .lead-section {
+    color: var(--muted);
+    font-size: 15.5px;
+    margin: 0 0 22px;
+    line-height: 1.7;
+  }
+
+  /* Definition / key box */
+  .def {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 14px 0;
+  }
+  .def .term {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .def p { margin: 0; font-size: 15px; line-height: 1.7; }
+  .def p + p { margin-top: 8px; }
+
+  /* Diagram blocks */
+  .diagram {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin: 18px 0;
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: #d8d8d8;
+    overflow-x: auto;
+  }
+  .diagram .label {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .diagram .node {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin: 2px 0;
+  }
+  .diagram .n-user { background: rgba(90,162,255,0.12); color: var(--blue); }
+  .diagram .n-model { background: rgba(255,122,26,0.12); color: var(--accent); }
+  .diagram .n-tool { background: rgba(185,133,255,0.12); color: var(--purple); }
+  .diagram .n-out { background: rgba(62,207,142,0.12); color: var(--green); }
+  .diagram .arrow { color: var(--muted); }
+  .diagram .indent { padding-left: 24px; }
+  .diagram .loop-mark { color: var(--accent); font-weight: 600; }
+
+  /* Compare table */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-size: 14.5px;
+  }
+  .compare th, .compare td {
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .compare th {
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .compare td b { color: var(--text); }
+  .compare td.feature {
+    color: var(--accent);
+    font-weight: 600;
+    background: rgba(255,122,26,0.04);
+  }
+
+  /* Tip / Warn */
+  .tip, .warn, .key {
+    padding: 16px 18px;
+    border-radius: 10px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    margin: 14px 0;
+  }
+  .tip { background: rgba(62, 207, 142, 0.06); border: 1px solid rgba(62, 207, 142, 0.22); }
+  .tip b { color: var(--green); }
+  .warn { background: rgba(255, 122, 26, 0.06); border: 1px solid rgba(255, 122, 26, 0.22); }
+  .warn b { color: var(--accent); }
+  .key { background: rgba(90, 162, 255, 0.06); border: 1px solid rgba(90, 162, 255, 0.22); }
+  .key b { color: var(--blue); }
+
+  /* Final summary */
+  .quote-band {
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    text-align: center;
+    margin: 18px 0;
+  }
+  .quote-band .q {
+    font-size: 22px;
+    line-height: 1.55;
+    max-width: 700px;
+    margin: 0 auto 10px;
+  }
+  .quote-band .q .accent { color: var(--accent); }
+  .quote-band .cite { color: var(--muted); font-size: 13.5px; margin: 0; }
+
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex; justify-content: space-between; flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* ─── Architecture diagram ─── */
+  .arch {
+    margin: 22px 0 8px;
+    padding: 0;
+    background: transparent;
+  }
+  .arch-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .arch-io {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 220px;
+    border: 1px solid;
+  }
+  .arch-io.input {
+    background: rgba(90,162,255,0.08);
+    color: var(--blue);
+    border-color: rgba(90,162,255,0.35);
+  }
+  .arch-io.output {
+    background: rgba(62,207,142,0.08);
+    color: var(--green);
+    border-color: rgba(62,207,142,0.35);
+  }
+  .arch-arrow {
+    color: var(--muted);
+    font-size: 22px;
+    padding: 6px 0;
+    line-height: 1;
+  }
+  .arch-harness {
+    position: relative;
+    width: 100%;
+    border: 2px dashed var(--accent);
+    border-radius: 18px;
+    padding: 44px 22px 22px;
+    background: rgba(255,122,26,0.03);
+  }
+  .arch-harness-label {
+    position: absolute;
+    top: -12px;
+    left: 22px;
+    background: var(--bg);
+    padding: 0 12px;
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 14px;
+    grid-template-areas:
+      "sys llm tools"
+      "ctx ctx ctx";
+  }
+  .arch-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .arch-box-title {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .arch-box-desc {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .arch-box-desc b { color: var(--text); }
+  .arch-box-formula {
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: rgba(255,122,26,0.08);
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin: 8px 0;
+    display: inline-block;
+  }
+  .arch-sys { grid-area: sys; }
+  .arch-llm {
+    grid-area: llm;
+    background: rgba(255,122,26,0.06);
+    border-color: var(--accent);
+    border-width: 2px;
+  }
+  .arch-llm .arch-box-title { color: var(--accent); }
+  .arch-tools { grid-area: tools; }
+  .arch-ctx {
+    grid-area: ctx;
+    background: rgba(90,162,255,0.04);
+    border-color: rgba(90,162,255,0.3);
+  }
+  .arch-ctx .arch-box-title { color: var(--blue); }
+  .arch-sys .arch-box-title { color: var(--purple); }
+  .arch-tools .arch-box-title { color: var(--green); }
+
+  .arch-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 18px;
+    padding: 18px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .arch-flow-title {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .arch-flow-step {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .arch-flow-step .n {
+    color: var(--accent);
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 12px;
+    min-width: 24px;
+    font-weight: 600;
+  }
+  .arch-flow-step .t { color: #d8d8d8; }
+  .arch-flow-step .t b { color: var(--accent); }
+  .arch-loop-bracket {
+    color: var(--accent);
+    font-family: "SF Mono", ui-monospace, monospace;
+    font-size: 12px;
+    padding: 4px 0 4px 34px;
+    border-left: 2px dashed rgba(255,122,26,0.35);
+    margin-left: 11px;
+    font-style: italic;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 12px; height: 12px; border-radius: 3px;
+    border: 1px solid;
+  }
+  .legend-dot.llm { background: rgba(255,122,26,0.4); border-color: var(--accent); }
+  .legend-dot.sys { background: rgba(185,133,255,0.3); border-color: var(--purple); }
+  .legend-dot.tool { background: rgba(62,207,142,0.3); border-color: var(--green); }
+  .legend-dot.ctx { background: rgba(90,162,255,0.3); border-color: var(--blue); }
+  .legend-dot.harness {
+    background: transparent;
+    border: 2px dashed var(--accent);
+  }
+
+  @media (max-width: 720px) {
+    h1 { font-size: 28px; }
+    h2 { font-size: 20px; }
+    .wrap { padding: 40px 18px 80px; }
+    .compare th, .compare td { padding: 8px 10px; font-size: 13.5px; }
+    .diagram { font-size: 12.5px; padding: 16px; }
+    .arch-grid {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "sys"
+        "llm"
+        "tools"
+        "ctx";
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="breadcrumb">
+    <a href="../index.html">메인</a>
+    <span class="sep">›</span>
+    <a href="index.html">중급자용</a>
+    <span class="sep">›</span>
+    AI 구조 들여다보기
+  </div>
+
+  <header class="hero">
+    <span class="tagline">Advanced · AI의 구조</span>
+    <h1>왜 Agent만 <span class="accent">'다시 시도'</span>를 할 수 있나</h1>
+    <p class="lead">"범용 AI 도구(ChatGPT, Gemini)는 못 하고 Agent(Claude Code, Codex)는 할 수 있다"는 차이의 진짜 이유. 모델의 능력 차이가 <b>아닙니다</b>. 모델을 감싼 구조의 차이입니다.</p>
+    <p class="lead-muted">이 글은 비전공자도 따라올 수 있게 썼지만, 메인 가이드보다 한 단계 깊은 내용입니다.</p>
+  </header>
+
+  <nav class="toc">
+    <h3>이 글의 흐름</h3>
+    <ol>
+      <li><a href="#one-line">한 줄 답</a></li>
+      <li><a href="#stateless">LLM은 '상태 없는 함수'다</a></li>
+      <li><a href="#memory">"메모리"라는 거짓말 — 컨텍스트 윈도우의 정체</a></li>
+      <li><a href="#system">시스템 프롬프트 — 매 호출 앞에 붙는 명령</a></li>
+      <li><a href="#tools">도구(Tools) — 모델이 "이걸 부르고 싶다"고 말하는 법</a></li>
+      <li><a href="#harness">하니스(Harness) — Agent의 본질</a></li>
+      <li><a href="#architecture">한 장으로 보는 Agent 구조 (도식도)</a></li>
+      <li><a href="#loop">두 개의 다른 루프 (그림으로)</a></li>
+      <li><a href="#why-retry">그래서 "다시 시도"가 가능한 진짜 이유</a></li>
+      <li><a href="#limits">한계는 어디에 있나</a></li>
+      <li><a href="#summary">정리 한 장</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1 -->
+  <section id="one-line">
+    <h2><span class="num">01</span>한 줄 답</h2>
+    <div class="quote-band">
+      <p class="q">모델이 더 똑똑해서가 아니라,<br/>모델이 <span class="accent">"또 시도하겠다"</span>고 말하면<br/>그걸 실제로 또 돌려주는 <span class="accent">자동 루프</span>가 있기 때문입니다.</p>
+      <p class="cite">— 같은 모델을 채팅에 넣어도, Agent에 넣어도, 모델은 똑같습니다. 다른 건 그 주변.</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="stateless">
+    <h2><span class="num">02</span>LLM은 '상태 없는 함수'다</h2>
+    <p class="lead-section">
+      모든 이야기는 여기서 시작됩니다. LLM(거대언어모델 · Claude·GPT 등)의 본질은 의외로 단순합니다.
+    </p>
+
+    <div class="def">
+      <span class="term">정의</span>
+      <p>LLM = <b>"텍스트를 넣으면 텍스트가 나오는 함수"</b> 하나.</p>
+      <p>한 번 부르면 한 번 답하고 끝. 기억도 없고, 자기가 방금 뭘 했는지도 모릅니다. 다음에 또 부르면 처음부터입니다.</p>
+    </div>
+
+    <p>이 점이 직관과 매우 다릅니다. ChatGPT랑 "어제 이야기"를 이어 하면 마치 모델이 기억하는 것 같지만, 사실 그건 <b>대화 시스템이 어제 대화 전체를 다시 모델에 넣어주기 때문</b>입니다. 모델 자체는 어제를 모릅니다.</p>
+
+    <p>비유하자면 LLM은 <b>매번 처음 만나는 직원</b>입니다. 머리는 비상하지만, 어제 한 일을 묻고 싶으면 어제 일기를 다시 보여줘야 합니다.</p>
+
+    <div class="key">
+      <b>핵심</b>: 이후 모든 이야기는 "이 상태 없는 함수에게 어떤 보조 장치를 붙이느냐"의 차이입니다.
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="memory">
+    <h2><span class="num">03</span>"메모리"라는 거짓말 — 컨텍스트 윈도우의 정체</h2>
+    <p class="lead-section">
+      흔히 "AI에게 메모리가 있다"고 말합니다. 정확히 말하면 <b>없습니다</b>. 있는 건 <b>컨텍스트 윈도우</b>예요.
+    </p>
+
+    <div class="def">
+      <span class="term">컨텍스트 윈도우</span>
+      <p>모델을 한 번 부를 때 <b>입력으로 한꺼번에 넣을 수 있는 텍스트의 최대 길이</b>. 현재 Claude는 약 20만 토큰(영어 기준 책 한 권 분량), GPT-4o는 12만 토큰.</p>
+    </div>
+
+    <p>"대화 메모리"라 부르는 것의 정체:</p>
+    <ul>
+      <li>채팅창에 메시지를 쓰면 <b>그 대화 전체 히스토리</b>가 매번 모델에 다시 들어갑니다.</li>
+      <li>대화가 길어져 윈도우 한도에 가까워지면, 시스템이 <b>앞부분을 잘라내거나 요약</b>해서 줄입니다.</li>
+      <li>그래서 "앞에서 한 약속을 까먹는" 증상이 생기는 거예요.</li>
+    </ul>
+
+    <p><b>"장기 기억"은 모델 안엔 없습니다.</b> 별도로 파일·DB에 기록해두고, 필요할 때마다 컨텍스트에 다시 넣어주는 방식으로 흉내냅니다. ChatGPT의 "Memory" 기능, Claude의 프로젝트 파일, AI 노트앱들 — 다 같은 원리입니다.</p>
+
+    <div class="warn">
+      <b>실무 함의</b>: 그래서 대화가 너무 길어지면 <b>새 대화를 시작하고 핵심 맥락만 다시 넣어주는 게</b> 결과가 좋습니다. 메인 가이드의 "막혔을 때 — 증상 1"이 이 이유예요.
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="system">
+    <h2><span class="num">04</span>시스템 프롬프트 — 매 호출 앞에 붙는 명령</h2>
+    <p class="lead-section">
+      모델은 매 호출마다 "너는 누구이고 어떻게 행동해야 하는지"를 다시 듣습니다. 이게 <b>시스템 프롬프트</b>입니다.
+    </p>
+
+    <div class="def">
+      <span class="term">시스템 프롬프트</span>
+      <p>사용자 메시지 <b>앞에</b> 매번 자동으로 붙는 메타 명령. 사용자는 보통 못 봅니다. 도구 만든 회사가 정해둡니다.</p>
+    </div>
+
+    <p>같은 모델이라도 시스템 프롬프트가 다르면 완전히 다른 도구가 됩니다.</p>
+
+    <table class="compare">
+      <thead>
+        <tr><th>도구</th><th>시스템 프롬프트 (대략 이런 톤)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>ChatGPT 웹</b></td>
+          <td>"너는 친절한 AI 어시스턴트다. 한 번에 답하고, 사용자 다음 메시지를 기다려라."</td>
+        </tr>
+        <tr>
+          <td><b>Claude Code</b></td>
+          <td>"너는 사용자의 PC에서 일하는 코딩 동료다. 파일을 읽고 쓸 수 있고 검색·실행 도구가 있다. <b>임무를 받으면 도구를 골라 써서 끝까지 진행하라.</b> 위험한 작업은 사용자에게 먼저 확인해라."</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>핵심 차이: <b>"끝까지 진행하라"</b>가 들어가 있느냐. 이 한 줄이 모델의 행동을 바꿉니다. 한 번 답하고 멈추는 대신, 도구를 부르고 결과를 보고 다음 단계를 결정합니다.</p>
+
+    <div class="tip">
+      <b>실무 함의</b>: 여러분이 채팅창에 "단계별로 진행해줘"라고 쓰는 건 사실 <b>시스템 프롬프트에 임시로 한 줄을 더하는 것</b>과 비슷한 효과입니다. 그래서 효과가 있어요.
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="tools">
+    <h2><span class="num">05</span>도구(Tools) — 모델이 "이걸 부르고 싶다"고 말하는 법</h2>
+    <p class="lead-section">
+      모델은 PC 안의 파일을 직접 못 읽습니다. 인터넷 검색도 못 합니다. 모델이 할 수 있는 건 <b>오직 텍스트 출력</b>뿐이에요. 그런데 어떻게 파일을 읽나요?
+    </p>
+
+    <p>방법은 약속된 형식으로 <b>"이 도구를 부르고 싶다"</b>고 텍스트로 말하는 겁니다. 예를 들어 모델이 이렇게 출력했다고 합시다:</p>
+
+    <div class="diagram">
+      <div class="label">모델의 출력</div>
+      <span class="node n-model">read_file("시험자료/A중_2024_중간_국어.pdf")</span>
+    </div>
+
+    <p>모델은 이걸 그냥 텍스트로 쓴 거예요. 모델은 파일을 읽지 않았습니다. <b>"읽고 싶다"고 말했을 뿐</b>입니다. 그 다음에 일어나는 일:</p>
+
+    <ol>
+      <li>모델 응답을 받은 <b>주변 프로그램(=하니스)</b>이 이 텍스트를 해석합니다: "아, <code>read_file</code>이라는 도구를 호출하라고 했네."</li>
+      <li>하니스가 <b>실제로</b> 그 PDF 파일을 엽니다 (이건 그냥 평범한 컴퓨터 동작).</li>
+      <li>파일 내용을 텍스트로 만들어 <b>다음 번 모델 호출의 컨텍스트에 넣어줍니다</b>.</li>
+      <li>모델은 그 내용을 보고 다음 행동을 결정합니다.</li>
+    </ol>
+
+    <div class="def">
+      <span class="term">도구 (Tool)</span>
+      <p>모델이 "사용하고 싶다"고 텍스트로 표현할 수 있는 외부 함수. 실제 실행은 모델이 하는 게 아니라 <b>주변 프로그램</b>이 합니다.</p>
+      <p>예시: 파일 읽기·쓰기, 폴더 목록 보기, 웹 검색, 코드 실행, 데이터베이스 조회, 다른 사이트 API 호출 등.</p>
+    </div>
+
+    <p>범용 채팅 도구도 일부 도구를 가지긴 합니다 (ChatGPT의 "코드 인터프리터", 이미지 생성 등). 하지만 <b>Agent는 도구 종류가 훨씬 많고, 도구를 연달아 여러 번 부르는 자유도</b>가 큽니다.</p>
+  </section>
+
+  <!-- 6 -->
+  <section id="harness">
+    <h2><span class="num">06</span>하니스(Harness) — Agent의 본질</h2>
+    <p class="lead-section">
+      위에서 슬쩍 언급한 <b>"주변 프로그램"</b>이 진짜 주인공입니다.
+    </p>
+
+    <div class="def">
+      <span class="term">하니스 (Harness)</span>
+      <p>모델을 부르고 → 응답을 받고 → 도구 호출이 있으면 실행하고 → 결과를 다시 모델에 먹이고 → 이걸 모델이 "끝났다"고 할 때까지 자동으로 반복하는 <b>프로그램</b>.</p>
+      <p>한국어로 옮기면 "마구" "받침대" — 모델이라는 동물에게 씌우는 보조 장치라는 뉘앙스입니다.</p>
+    </div>
+
+    <p>하니스가 하는 일을 코드 흉내로 적으면:</p>
+
+    <div class="diagram">
+      <div class="label">하니스가 도는 루프 (의사 코드)</div>
+context = [시스템 프롬프트, 사용자 임무]
+반복:
+    응답 = 모델_호출(context)
+    context.추가(응답)
+    만약 응답.도구_호출_있음:
+        결과 = 도구_실행(응답.도구_호출)
+        context.추가(결과)
+    아니면:
+        # 모델이 "완료"라고 답함
+        반복_종료
+사용자에게 보고
+    </div>
+
+    <p>이 작은 루프가 Agent의 거의 전부입니다. <b>이 루프가 없으면 같은 모델도 한 번에 답하고 멈춥니다</b>. 루프가 있으면 자기 결과를 보고 다음 행동을 정합니다.</p>
+
+    <div class="key">
+      <b>비유</b>: 모델은 똑같이 똑똑한 직원. 범용 채팅은 "한 마디 시키고 답 들으면 끝나는 면접". 하니스는 "임무 주고 사무실에 풀어둔 상태 — 본인이 스스로 굴러감".
+    </div>
+  </section>
+
+  <!-- 6.5 — Architecture diagram -->
+  <section id="architecture">
+    <h2><span class="num">07</span>한 장으로 보는 Agent 구조</h2>
+    <p class="lead-section">
+      앞에서 이야기한 다섯 가지 구성요소(LLM·시스템 프롬프트·컨텍스트 윈도우·도구·하니스)가 어떻게 맞물려 있는지 한 그림으로.
+    </p>
+
+    <div class="arch">
+      <div class="arch-stack">
+
+        <div class="arch-io input">사용자 임무 — "C중 학생 예상문제 만들어줘"</div>
+        <div class="arch-arrow">↓</div>
+
+        <!-- Harness wraps everything -->
+        <div class="arch-harness">
+          <div class="arch-harness-label">⟳ Harness (하니스) — 자동 루프</div>
+
+          <div class="arch-grid">
+
+            <!-- System Prompt -->
+            <div class="arch-box arch-sys">
+              <div class="arch-box-title">시스템 프롬프트</div>
+              <div class="arch-box-desc">
+                매 호출 앞에 자동으로 붙는 메타 명령.<br/>
+                <b>"도구를 골라 써서 끝까지 진행해라"</b>
+              </div>
+            </div>
+
+            <!-- LLM (center) -->
+            <div class="arch-box arch-llm">
+              <div class="arch-box-title">LLM (모델)</div>
+              <div class="arch-box-formula">텍스트 → 텍스트</div>
+              <div class="arch-box-desc">
+                <b>상태 없는 함수</b>.<br/>
+                한 번 부르면 한 번 답하고 끝.<br/>
+                기억도, 손발도, 도구 실행 권한도 없음.<br/>
+                할 수 있는 건 <b>오직 텍스트 출력</b>.
+              </div>
+            </div>
+
+            <!-- Tools -->
+            <div class="arch-box arch-tools">
+              <div class="arch-box-title">도구 (Tools)</div>
+              <div class="arch-box-desc">
+                모델이 "<b>이걸 부르고 싶다</b>"고 텍스트로 말하면, 하니스가 실제로 실행.<br/>
+                · 파일 읽기·쓰기<br/>
+                · 웹 검색<br/>
+                · 코드 실행<br/>
+                · 외부 API 호출
+              </div>
+            </div>
+
+            <!-- Context window (full width) -->
+            <div class="arch-box arch-ctx">
+              <div class="arch-box-title">컨텍스트 윈도우 — 모델이 매 호출에 보는 입력 전체</div>
+              <div class="arch-box-desc">
+                [시스템 프롬프트] + [사용자 임무] + [지금까지의 모델 응답] + [지금까지의 도구 실행 결과]
+                <br/>= 약 20만 토큰까지 (책 한 권 분량). 넘으면 앞부분이 잘리거나 요약됨.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="arch-arrow">↓</div>
+        <div class="arch-io output">사용자에게 최종 결과 보고 — 워드 파일 출력, 작업 요약 등</div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot llm"></span><b style="color: var(--accent);">LLM</b> — 모델 자체</div>
+        <div class="legend-item"><span class="legend-dot sys"></span><b style="color: var(--purple);">시스템 프롬프트</b> — 메타 명령</div>
+        <div class="legend-item"><span class="legend-dot tool"></span><b style="color: var(--green);">도구</b> — 실제 손발</div>
+        <div class="legend-item"><span class="legend-dot ctx"></span><b style="color: var(--blue);">컨텍스트</b> — 모델이 보는 입력</div>
+        <div class="legend-item"><span class="legend-dot harness"></span><b style="color: var(--accent);">하니스</b> — 자동 루프</div>
+      </div>
+
+      <!-- The actual loop sequence -->
+      <div class="arch-flow">
+        <div class="arch-flow-title">하니스가 도는 한 사이클</div>
+        <div class="arch-flow-step"><span class="n">1.</span><span class="t">컨텍스트(시스템 프롬프트 + 임무 + 지금까지 결과)를 <b>모델에 입력</b></span></div>
+        <div class="arch-flow-step"><span class="n">2.</span><span class="t">모델이 텍스트로 응답 — "이 도구를 부르겠다" 또는 "완료했다"</span></div>
+        <div class="arch-flow-step"><span class="n">3.</span><span class="t">하니스가 응답을 해석 — 도구 호출이면 <b>실제로 실행</b></span></div>
+        <div class="arch-flow-step"><span class="n">4.</span><span class="t">도구 결과를 컨텍스트에 <b>추가</b></span></div>
+        <div class="arch-loop-bracket">↻ 1번으로 돌아감 — 모델이 "완료"라고 할 때까지</div>
+        <div class="arch-flow-step"><span class="n">5.</span><span class="t">완료 신호 → 사용자에게 결과 출력</span></div>
+      </div>
+    </div>
+
+    <div class="key">
+      <b>핵심 한 마디</b>: 가운데 LLM만 보면 범용 AI도 Agent도 똑같습니다. <b>주변 점선 박스(하니스)와 양옆 도구 박스가 있느냐 없느냐</b>가 모든 차이를 만듭니다.
+    </div>
+
+    <h3>각 구성요소를 한 문장으로</h3>
+    <ul>
+      <li><b style="color: var(--accent);">LLM</b> — 텍스트를 받아 텍스트를 만드는 함수. 똑똑하지만 손발도 기억도 없음.</li>
+      <li><b style="color: var(--purple);">시스템 프롬프트</b> — 모델에게 "너는 누구냐, 어떻게 행동할 거냐"를 매번 다시 알려주는 한두 문단의 명령.</li>
+      <li><b style="color: var(--blue);">컨텍스트 윈도우</b> — 모델이 한 번에 볼 수 있는 입력 전체. 대화·도구결과·임무가 다 여기 쌓임. 유한.</li>
+      <li><b style="color: var(--green);">도구</b> — 모델이 "쓰고 싶다"고 말할 수 있는 외부 기능. 실제 실행은 하니스가 함.</li>
+      <li><b style="color: var(--accent);">하니스</b> — 위 네 가지를 묶어서 자동으로 돌리는 프로그램. <b>Agent를 Agent로 만드는 핵심</b>.</li>
+    </ul>
+  </section>
+
+  <!-- 7 -->
+  <section id="loop">
+    <h2><span class="num">08</span>두 개의 다른 루프</h2>
+    <p class="lead-section">
+      범용 AI와 Agent의 흐름을 나란히 놓으면 차이가 또렷합니다.
+    </p>
+
+    <h3>① 범용 AI의 루프 — 루프 도는 주체: <span style="color: var(--blue);">사람</span></h3>
+    <div class="diagram">
+      <div class="label">범용 채팅 (ChatGPT 웹, Claude 웹 등)</div>
+<span class="n-user node">사용자 메시지</span> <span class="arrow">→</span> <span class="n-model node">모델 한 번 호출</span> <span class="arrow">→</span> <span class="n-out node">응답 표시</span>
+<span class="indent" style="color: var(--muted);">↑ 사용자가 평가하고 직접 다음 메시지를 입력</span>
+<span class="indent loop-mark">↻ (이 루프를 도는 건 사람)</span>
+    </div>
+
+    <h3>② Agent의 루프 — 루프 도는 주체: <span style="color: var(--accent);">프로그램(하니스)</span></h3>
+    <div class="diagram">
+      <div class="label">Agent (Claude Code, Codex 등)</div>
+<span class="n-user node">사용자 임무</span> <span class="arrow">→</span> <span class="n-model node">모델 호출</span>
+<span class="indent">↓</span>
+<span class="indent">모델 응답: <span class="n-tool node">"도구 X 부르겠다"</span></span>
+<span class="indent">↓</span>
+<span class="indent"><span class="n-tool node">도구 실제 실행</span> (파일 열기, 검색 등)</span>
+<span class="indent">↓</span>
+<span class="indent">결과를 컨텍스트에 추가 → <span class="n-model node">모델 다시 호출</span></span>
+<span class="indent loop-mark">↻ 모델이 "완료"라고 할 때까지 자동 반복</span>
+<span class="indent">↓</span>
+<span class="indent"><span class="n-out node">사용자에게 결과 보고</span></span>
+    </div>
+
+    <p>같은 모델, 같은 컨텍스트 윈도우, 같은 도구 호출 능력 — 차이는 <b>한 가지</b>: 루프를 누가 도느냐.</p>
+  </section>
+
+  <!-- 8 -->
+  <section id="why-retry">
+    <h2><span class="num">09</span>그래서 "다시 시도"가 가능한 진짜 이유</h2>
+    <p class="lead-section">
+      위 그림이 머릿속에 그려졌다면, 이제 본 질문에 답할 수 있습니다.
+    </p>
+
+    <p><b>"부족하면 다시"가 Agent에서 가능한 이유</b>는 이렇게 분해됩니다:</p>
+
+    <ol>
+      <li>모델이 도구를 부른다 (예: 웹 검색).</li>
+      <li>도구가 결과를 돌려준다 (예: "검색 결과 0건").</li>
+      <li>그 결과가 <b>다음 모델 호출의 컨텍스트에 자동으로 추가</b>된다.</li>
+      <li>모델은 그 결과를 보고 "음, 키워드가 안 좋았네. 다른 단어로 다시 검색해야겠다"고 결정한다.</li>
+      <li>모델이 또 다른 도구 호출을 출력 → 하니스가 또 실행 → ...</li>
+      <li>모델이 만족할 때까지 이 루프가 자동으로 돈다.</li>
+    </ol>
+
+    <p>중요한 건 <b>이 모든 게 "한 번의 사용자 임무" 안에서 자동으로 일어난다</b>는 점입니다. 사용자는 가만히 있어도 됩니다.</p>
+
+    <p>범용 채팅에서 똑같은 효과를 내려면:</p>
+    <ul>
+      <li>사용자가 결과를 보고 → "이 키워드 결과 0건이네, 다른 단어로 다시 검색해줘" → 모델이 답 → ...</li>
+      <li>매 단계마다 <b>사람이 끼어들어야 함</b>.</li>
+    </ul>
+
+    <div class="key">
+      <b>정리</b>: "다시 시도" 능력은 모델의 능력이 아니라 <b>루프의 자동화 수준</b>의 문제입니다. 모델 자체는 이미 "다시 해야겠다"고 판단할 줄 압니다. 다만 그 판단을 받아 실제 실행으로 옮겨주는 손발(=하니스)이 범용 채팅에는 없을 뿐.
+    </div>
+
+    <h3>자기 검증(self-check)도 같은 원리</h3>
+    <p>"네가 만든 답이 맞는지 다시 확인해줘"라고 시키면, Agent는 ① 자기가 방금 만든 파일을 도구로 다시 읽어 → ② 검토 → ③ 틀리면 수정 → ④ 다시 검토 — 이 사이클을 자동으로 돕니다. 같은 모델을 범용 채팅에 두면 ①에서 막힙니다 ("저는 파일을 읽을 수 없습니다").</p>
+  </section>
+
+  <!-- 9 -->
+  <section id="limits">
+    <h2><span class="num">10</span>한계는 어디에 있나</h2>
+    <p class="lead-section">
+      Agent가 만능은 아닙니다. 구조적 한계도 같은 자리에서 나옵니다.
+    </p>
+
+    <h3>한계 1 — 컨텍스트 윈도우는 유한하다</h3>
+    <p>루프가 길어지면 도구 호출 결과들이 컨텍스트에 계속 쌓입니다. 20만 토큰을 넘기면 <b>앞부분이 잘리거나 요약</b>됩니다. 그래서 한 임무가 너무 길면 "앞에서 한 약속을 깬다"가 일어나요.</p>
+    <p><b>대응</b>: 큰 일을 작은 임무로 쪼개기. 각 임무의 결과를 파일로 저장하고, 다음 임무는 그 파일을 다시 읽어 시작.</p>
+
+    <h3>한계 2 — 잘못된 판단도 자동으로 계속 한다</h3>
+    <p>모델이 한 번 잘못된 방향을 잡으면, 루프가 그걸 자동으로 굴려서 멀리 갑니다. 30분 후에 보니 산으로 가 있는 케이스.</p>
+    <p><b>대응</b>: 메인 가이드 Step 3 — <b>"바로 실행 말고 계획만 먼저"</b>. 인간이 중간에 끼어드는 체크포인트를 명시적으로 만들기.</p>
+
+    <h3>한계 3 — 도구의 한계가 곧 Agent의 한계</h3>
+    <p>Agent가 PDF에 그래프가 있는데 그래프 데이터를 읽을 수 있는 도구가 없으면 못 합니다. 모델이 똑똑해도 손이 없으면 못 짚는 거예요.</p>
+    <p><b>대응</b>: 어떤 도구가 있는지 알고 시작. 없는 일은 사람이 우회 (그래프 부분만 따로 캡쳐해서 별도 처리 등).</p>
+
+    <h3>한계 4 — 권한 = 위험</h3>
+    <p>Agent가 파일을 쓰고 지울 수 있다는 건, 잘못된 판단으로 <b>중요한 파일을 덮어쓸 수도</b> 있다는 뜻입니다.</p>
+    <p><b>대응</b>: 작업 폴더를 분리. 원본 파일은 별도 폴더에 보관. Agent에게는 작업 사본만 노출. Git 같은 버전관리도 안전망.</p>
+
+    <div class="warn">
+      <b>핵심</b>: 자동화의 힘은 곧 자동화된 실수의 힘입니다. <b>"끝까지 자동으로"</b>는 매력적이지만, 그 자동의 출발 지점(계획)과 도착 지점(검수)에 사람이 있어야 안전합니다.
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section id="summary">
+    <h2><span class="num">11</span>정리 한 장</h2>
+
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>구성요소</th>
+          <th>범용 채팅 (ChatGPT 웹 등)</th>
+          <th>Agent (Claude Code 등)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="feature">모델 (LLM)</td>
+          <td colspan="2" style="text-align: center; color: var(--muted);"><b>같음</b> — 같은 함수, 같은 모델 사용 가능</td>
+        </tr>
+        <tr>
+          <td class="feature">컨텍스트 윈도우</td>
+          <td colspan="2" style="text-align: center; color: var(--muted);"><b>같음</b> — 모델에 따라 한도가 정해짐</td>
+        </tr>
+        <tr>
+          <td class="feature">시스템 프롬프트</td>
+          <td>"한 번 답하고 멈춰라"</td>
+          <td>"도구를 골라 써서 끝까지 진행하라"</td>
+        </tr>
+        <tr>
+          <td class="feature">도구</td>
+          <td>거의 없음 (또는 한정적)</td>
+          <td>다수 — 파일·검색·실행·외부 API 등</td>
+        </tr>
+        <tr>
+          <td class="feature">하니스 (자동 루프)</td>
+          <td><b>없음</b> — 루프는 사람이 돈다</td>
+          <td><b>있음</b> — 프로그램이 자동으로 돈다</td>
+        </tr>
+        <tr>
+          <td class="feature">"다시 시도"</td>
+          <td>사람이 매번 다시 메시지를 보내야</td>
+          <td>모델이 "또" 결정 → 자동으로 또 시도</td>
+        </tr>
+        <tr>
+          <td class="feature">자기 검증</td>
+          <td>모델이 자기 출력을 다시 못 봄</td>
+          <td>도구로 자기 출력을 읽어 검증 가능</td>
+        </tr>
+        <tr>
+          <td class="feature">실패 모드</td>
+          <td>대화가 산만해짐 / 자료 한계</td>
+          <td>잘못된 방향으로 자동으로 멀리 감</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="quote-band">
+      <p class="q">차이는 <span class="accent">모델</span>이 아니라<br/>모델을 감싼 <span class="accent">루프</span>입니다.</p>
+      <p class="cite">그래서 같은 모델로도 어떤 도구는 인턴이고 어떤 도구는 비서가 됩니다.</p>
+    </div>
+
+    <p style="margin-top: 24px;">
+      <a href="../index.html" style="margin-right: 16px;">← 메인 가이드로</a>
+      <a href="index.html">→ 중급자용 6장 카드</a>
+    </p>
+  </section>
+
+  <footer>
+    <div>© 2026 how-to-claude · advanced</div>
+    <div><a href="index.html">중급자 메인</a> · <a href="../index.html">초급자 가이드</a></div>
+  </footer>
+
+</div>
+
+</body>
+</html>
